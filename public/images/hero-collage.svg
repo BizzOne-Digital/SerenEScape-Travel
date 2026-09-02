@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" role="img" aria-label="Editorial travel collage">
+  <rect width="1200" height="600" fill="#F8F3EA"/>
+  <rect x="40" y="40" width="350" height="250" rx="12" fill="#35143F" opacity="0.15"/>
+  <rect x="420" y="80" width="300" height="200" rx="12" fill="#8D234B" opacity="0.2"/>
+  <rect x="760" y="30" width="400" height="280" rx="12" fill="#168C67" opacity="0.15"/>
+  <rect x="80" y="320" width="500" height="240" rx="12" fill="#2446B8" opacity="0.12"/>
+  <rect x="620" y="340" width="540" height="220" rx="12" fill="#E96824" opacity="0.15"/>
+  <line x1="40" y1="40" x2="1160" y2="560" stroke="#C49A4A" stroke-width="2" opacity="0.4" stroke-dasharray="8 6"/>
+  <circle cx="200" cy="165" r="6" fill="#C49A4A"/>
+  <circle cx="570" cy="180" r="6" fill="#C49A4A"/>
+  <circle cx="960" cy="170" r="6" fill="#C49A4A"/>
+  <circle cx="330" cy="440" r="6" fill="#C49A4A"/>
+  <circle cx="890" cy="450" r="6" fill="#C49A4A"/>
+</svg>

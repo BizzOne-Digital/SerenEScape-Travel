@@ -1,69 +1,147 @@
-import Image from "next/image";
+import { connectDB, isDBConfigured } from "@/lib/db/connect";
+import { Trip, Testimonial, Founder, FAQ } from "@/lib/models";
+import type { TripCardData } from "@/components/trips/TripCard";
+import type { FounderData } from "@/components/public/home/FoundersSection";
+import type { TestimonialData } from "@/components/public/home/TestimonialsSection";
+import type { FAQData } from "@/components/public/home/FAQPreview";
+import { HeroSection, type HeroFeaturedTrip } from "@/components/public/home/HeroSection";
+import { BelongSection } from "@/components/public/home/BelongSection";
+import { FeaturedTrips } from "@/components/public/home/FeaturedTrips";
+import { WhyDifferent } from "@/components/public/home/WhyDifferent";
+import { ExperienceSection } from "@/components/public/home/ExperienceSection";
+import { DestinationStory } from "@/components/public/home/DestinationStory";
+import { HowItWorks } from "@/components/public/home/HowItWorks";
+import { FoundersSection } from "@/components/public/home/FoundersSection";
+import { TestimonialsSection } from "@/components/public/home/TestimonialsSection";
+import { PaymentFlexibility } from "@/components/public/home/PaymentFlexibility";
+import { FAQPreview } from "@/components/public/home/FAQPreview";
+import { FinalCTA } from "@/components/public/home/FinalCTA";
 
-export default function Home() {
+interface HomePageData {
+  trips: TripCardData[];
+  testimonials: TestimonialData[];
+  founders: FounderData[];
+  faqs: FAQData[];
+}
+
+async function getHomePageData(): Promise<HomePageData> {
+  const empty: HomePageData = {
+    trips: [],
+    testimonials: [],
+    founders: [],
+    faqs: [],
+  };
+
+  if (!isDBConfigured()) {
+    return empty;
+  }
+
+  try {
+    await connectDB();
+
+    const [tripDocs, testimonialDocs, founderDocs, faqDocs] = await Promise.all([
+      Trip.find({
+        featured: true,
+        status: { $ne: "draft" },
+      })
+        .sort({ startDate: 1 })
+        .limit(6)
+        .lean(),
+      Testimonial.find({ approved: true })
+        .sort({ featured: -1, createdAt: -1 })
+        .limit(8)
+        .lean(),
+      Founder.find({ published: true }).sort({ order: 1 }).lean(),
+      FAQ.find({ published: true, isDraft: false })
+        .sort({ order: 1 })
+        .limit(8)
+        .lean(),
+    ]);
+
+    const trips: TripCardData[] = tripDocs.map((trip) => ({
+      slug: trip.slug,
+      title: trip.title,
+      destination: trip.destination,
+      startDate: trip.startDate?.toISOString() ?? null,
+      endDate: trip.endDate?.toISOString() ?? null,
+      durationDays: trip.durationDays,
+      groupMin: trip.groupMin,
+      groupMax: trip.groupMax,
+      capacity: trip.capacity,
+      reservedCount: trip.reservedCount,
+      priceFromCents: trip.priceFromCents,
+      salePriceCents: trip.salePriceCents ?? null,
+      currency: trip.currency,
+      depositCents: trip.depositCents,
+      paymentPlanEnabled: trip.paymentPlanEnabled,
+      status: trip.status,
+      heroImage: trip.heroImage ?? null,
+      shortDescription: trip.shortDescription ?? null,
+    }));
+
+    const testimonials: TestimonialData[] = testimonialDocs.map((item) => ({
+      _id: item._id.toString(),
+      name: item.name,
+      location: item.location,
+      tripTitle: item.tripTitle,
+      content: item.content,
+      rating: item.rating,
+    }));
+
+    const founders: FounderData[] = founderDocs.map((item) => ({
+      _id: item._id.toString(),
+      name: item.name,
+      title: item.title,
+      bio: item.bio,
+      welcomeNote: item.welcomeNote,
+      image: item.image,
+      order: item.order,
+      isPlaceholder: item.isPlaceholder,
+    }));
+
+    const faqs: FAQData[] = faqDocs.map((item) => ({
+      _id: item._id.toString(),
+      category: item.category,
+      question: item.question,
+      answer: item.answer,
+      order: item.order,
+    }));
+
+    return { trips, testimonials, founders, faqs };
+  } catch {
+    return empty;
+  }
+}
+
+export default async function HomePage() {
+  const { trips, testimonials, founders, faqs } = await getHomePageData();
+
+  const heroTrip: HeroFeaturedTrip | null = trips[0]
+    ? {
+        slug: trips[0].slug,
+        title: trips[0].title,
+        durationDays: trips[0].durationDays,
+        groupMin: trips[0].groupMin,
+        groupMax: trips[0].groupMax,
+        priceFromCents: trips[0].salePriceCents ?? trips[0].priceFromCents,
+        currency: trips[0].currency,
+      }
+    : null;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      <HeroSection featuredTrip={heroTrip} />
+      <BelongSection />
+      <FeaturedTrips trips={trips} />
+      <WhyDifferent />
+      <ExperienceSection />
+      <DestinationStory />
+      <HowItWorks />
+      <FoundersSection founders={founders} />
+      <TestimonialsSection testimonials={testimonials} />
+      <PaymentFlexibility />
+      <FAQPreview faqs={faqs} />
+      <FinalCTA />
+    </>
   );
 }

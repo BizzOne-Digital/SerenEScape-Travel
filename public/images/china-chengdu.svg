@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Chengdu traditional architecture">
+  <rect width="800" height="600" fill="#EADCCB"/>
+  <rect x="150" y="300" width="500" height="200" fill="#8D234B" opacity="0.3" rx="4"/>
+  <polygon points="150,300 400,180 650,300" fill="#35143F" opacity="0.5"/>
+  <rect x="320" y="380" width="80" height="120" fill="#171318" opacity="0.4" rx="40 40 0 0"/>
+  <circle cx="200" cy="450" r="40" fill="#168C67" opacity="0.3"/>
+  <circle cx="600" cy="460" r="50" fill="#168C67" opacity="0.25"/>
+</svg>

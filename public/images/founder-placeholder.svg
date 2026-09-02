@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" role="img" aria-label="Founder photograph pending">
+  <rect width="400" height="500" fill="#EADCCB"/>
+  <rect x="40" y="40" width="320" height="320" rx="8" fill="#35143F" opacity="0.1" stroke="#C49A4A" stroke-width="2" stroke-dasharray="8 4"/>
+  <text x="200" y="220" text-anchor="middle" fill="#8D234B" font-family="Georgia,serif" font-size="16">Founder Photo</text>
+  <text x="200" y="250" text-anchor="middle" fill="#35143F" font-family="sans-serif" font-size="12" opacity="0.7">Pending  Admin Upload</text>
+</svg>

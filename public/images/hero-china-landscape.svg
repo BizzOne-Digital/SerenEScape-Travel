@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Zhangjiajie mountain landscape">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#35143F"/>
+      <stop offset="50%" style="stop-color:#8D234B"/>
+      <stop offset="100%" style="stop-color:#E96824"/>
+    </linearGradient>
+    <linearGradient id="mist" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#EADCCB;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#F8F3EA;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#sky)"/>
+  <ellipse cx="600" cy="900" rx="700" ry="200" fill="url(#mist)"/>
+  <polygon points="200,600 280,200 360,600" fill="#171318" opacity="0.6"/>
+  <polygon points="400,650 500,150 600,650" fill="#171318" opacity="0.7"/>
+  <polygon points="650,620 780,180 910,620" fill="#171318" opacity="0.65"/>
+  <polygon points="850,680 950,250 1050,680" fill="#171318" opacity="0.55"/>
+  <rect y="580" width="1200" height="220" fill="#168C67" opacity="0.3"/>
+</svg>

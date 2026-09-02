@@ -1,0 +1,95 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "motion/react";
+import { IMAGES } from "@/config/images";
+
+const SESSION_KEY = "serenescape-session-loaded";
+
+export function PageLoader() {
+  const [visible, setVisible] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setReducedMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+    if (!sessionStorage.getItem(SESSION_KEY)) {
+      setVisible(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    const duration = reducedMotion ? 400 : 2200;
+    const timer = window.setTimeout(() => {
+      sessionStorage.setItem(SESSION_KEY, "1");
+      setVisible(false);
+    }, duration);
+
+    return () => window.clearTimeout(timer);
+  }, [visible, reducedMotion]);
+
+  if (!mounted) return null;
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          className="fixed inset-0 z-[9998] flex items-center justify-center bg-luxury-ink"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: reducedMotion ? 0.2 : 0.8, ease: [0.22, 1, 0.36, 1] }}
+          aria-hidden={!visible}
+          role="presentation"
+        >
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -left-1/4 top-1/4 h-96 w-96 rounded-full bg-rich-berry/30 blur-[100px]" />
+            <div className="absolute -right-1/4 bottom-1/4 h-96 w-96 rounded-full bg-burnt-orange/20 blur-[90px]" />
+          </div>
+
+          <motion.div
+            className="relative flex flex-col items-center gap-6"
+            initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: reducedMotion ? 0.15 : 0.9, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: reducedMotion ? 0 : 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: reducedMotion ? 0 : 0.2, duration: 0.7 }}
+            >
+              <Image
+                src={IMAGES.logo.src}
+                alt={IMAGES.logo.alt}
+                width={220}
+                height={72}
+                priority
+                className="h-auto w-44 sm:w-52"
+              />
+            </motion.div>
+
+            <motion.div
+              className="h-px w-24 bg-gradient-to-r from-transparent via-muted-gold to-transparent"
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{ delay: reducedMotion ? 0 : 0.5, duration: 0.8 }}
+            />
+
+            <motion.p
+              className="font-sans text-xs uppercase tracking-[0.35em] text-soft-ivory/60"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: reducedMotion ? 0 : 0.7, duration: 0.6 }}
+            >
+              Belong Everywhere.
+            </motion.p>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}

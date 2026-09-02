@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Luxury hotel suite">
+  <rect width="800" height="600" fill="#F8F3EA"/>
+  <rect x="50" y="350" width="700" height="200" fill="#EADCCB"/>
+  <rect x="100" y="200" width="300" height="250" fill="#35143F" opacity="0.15" rx="4"/>
+  <rect x="450" y="150" width="300" height="300" fill="#8D234B" opacity="0.1" rx="4"/>
+  <circle cx="650" cy="100" r="60" fill="#F3B51B" opacity="0.3"/>
+  <rect x="200" y="380" width="400" height="80" fill="#C49A4A" opacity="0.2" rx="8"/>
+</svg>
