@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { IMAGES } from "@/config/images";
+import { IMAGES, shouldUnoptimizeImage } from "@/config/images";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 const highlights: { icon: LucideIcon; title: string; description: string }[] = [
@@ -82,8 +82,25 @@ export function ExperienceSection() {
               className="[&_h2]:text-soft-ivory [&_p]:text-soft-ivory/75 [&_.prismatic-line]:opacity-90"
             />
 
-          <motion.div
-            className="relative mt-10 hidden aspect-[4/3] min-w-0 overflow-hidden rounded-2xl lg:block"
+            <motion.div
+              className="relative mt-10 aspect-[4/3] min-w-0 overflow-hidden rounded-2xl lg:hidden"
+              initial={reducedMotion ? false : { opacity: 0, scale: 0.96 }}
+              animate={inView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <Image
+                src={IMAGES.experienceCommunity.src}
+                alt={IMAGES.experienceCommunity.alt}
+                fill
+                unoptimized={shouldUnoptimizeImage(IMAGES.experienceCommunity.src)}
+                className="object-cover"
+                sizes="100vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-deep-aubergine/60 to-transparent" />
+            </motion.div>
+
+            <motion.div
+              className="relative mt-10 hidden aspect-[4/3] min-w-0 overflow-hidden rounded-2xl lg:block"
               initial={reducedMotion ? false : { opacity: 0, scale: 0.96 }}
               animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -92,6 +109,7 @@ export function ExperienceSection() {
                 src={IMAGES.experienceLuxury.src}
                 alt={IMAGES.experienceLuxury.alt}
                 fill
+                unoptimized={shouldUnoptimizeImage(IMAGES.experienceLuxury.src)}
                 className="object-cover"
                 sizes="(max-width: 1024px) 0vw, 50vw"
               />

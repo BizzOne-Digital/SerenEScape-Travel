@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useInView } from "motion/react";
 import { Container } from "@/components/ui/Container";
-import { IMAGES } from "@/config/images";
+import { IMAGES, shouldUnoptimizeImage } from "@/config/images";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/utils";
 
@@ -110,6 +110,7 @@ function DestinationPanel({
           src={dest.image.src}
           alt={dest.image.alt}
           fill
+          unoptimized={shouldUnoptimizeImage(dest.image.src)}
           className="object-cover"
           sizes="(max-width: 1024px) 100vw, 50vw"
         />

@@ -42,7 +42,7 @@ describe("image resolve helpers", () => {
   it("falls back for legacy disk URLs", () => {
     expect(isLegacyDiskUploadUrl("/uploads/hero.jpg")).toBe(true);
     expect(isLegacyDiskUploadUrl("/api/uploads/gallery/x.jpg")).toBe(false);
-    expect(resolveImageSrc("/uploads/hero.jpg")).toBe("/images/founder-placeholder.svg");
+    expect(resolveImageSrc("/uploads/hero.jpg")).toBe("/images/founders-duo.jpg");
   });
 
   it("keeps stored upload URLs", () => {

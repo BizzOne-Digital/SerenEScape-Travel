@@ -17,8 +17,8 @@ export default async function TripsPage() {
     <>
       <PageHero
         variant="image"
-        imageSrc={IMAGES.hero.src}
-        imageAlt={IMAGES.hero.alt}
+        imageSrc={IMAGES.pageHeroTrips.src}
+        imageAlt={IMAGES.pageHeroTrips.alt}
         eyebrow="Explore"
         title="Our Journeys"
         description="Curated adventures where safety, luxury, and community come together. Find your next escape."

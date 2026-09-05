@@ -6,7 +6,7 @@ import { motion, useInView } from "motion/react";
 import { ImageIcon } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { IMAGES } from "@/config/images";
+import { IMAGES, shouldUnoptimizeImage } from "@/config/images";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/utils";
 
@@ -83,6 +83,7 @@ function PlaceholderCard() {
           src={IMAGES.founderPlaceholder.src}
           alt={IMAGES.founderPlaceholder.alt}
           fill
+          unoptimized={shouldUnoptimizeImage(IMAGES.founderPlaceholder.src)}
           className="object-cover opacity-60"
           sizes="192px"
         />
@@ -113,6 +114,7 @@ function FounderCard({ founder }: { founder: FounderData }) {
           src={imageUrl}
           alt={imageAlt}
           fill
+          unoptimized={shouldUnoptimizeImage(imageUrl)}
           className="object-cover"
           sizes="(max-width: 640px) 100vw, 50vw"
         />

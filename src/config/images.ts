@@ -1,7 +1,9 @@
 /**
  * Centralized image manifest — replace paths here for site-wide updates.
- * People imagery: Black/BIPOC LGBTQIA+ women only when approved assets are added.
+ * Hero homepage image is unchanged; all other sections use client assets from /public.
  */
+
+import { publicSrc } from "@/config/public-images";
 
 export type ImageEntry = {
   src: string;
@@ -24,85 +26,122 @@ export const IMAGES = {
     containsPeople: false,
   },
   heroCollage: {
-    src: "/images/hero-collage.svg",
-    alt: "Editorial collage of Chinese architecture, cuisine, and natural wonders",
+    src: publicSrc("realisticGroup"),
+    alt: "Black lesbian and queer women travelers enjoying a luxury group journey together",
     category: "cultural" as const,
-    containsPeople: false,
+    containsPeople: true,
   },
   destinationChina: {
-    src: "/images/china-zhangjiajie.jpg",
-    alt: "Sandstone pillars of Zhangjiajie National Forest Park rising through golden morning mist",
+    src: publicSrc("internationalAdventure"),
+    alt: "Black lesbian and queer women on an adventurous international group journey",
     category: "destination" as const,
-    containsPeople: false,
+    containsPeople: true,
   },
   chinaOdysseyCommunity: {
-    src: "/images/china-odyssey-community.jpg",
-    alt: "Three Black women travelers laughing together beneath red lanterns at a traditional Chinese temple courtyard",
+    src: publicSrc("culturalExperience"),
+    alt: "Black women travelers sharing a respectful cultural experience abroad",
     category: "cultural" as const,
     containsPeople: true,
   },
   destinationChengdu: {
-    src: "/images/china-chengdu.jpg",
-    alt: "Traditional Sichuan tea house courtyard in Chengdu with red lanterns and steaming tea at golden hour",
+    src: publicSrc("culturalExperience"),
+    alt: "Black lesbian and queer women participating together in a respectful cultural experience",
     category: "destination" as const,
-    containsPeople: false,
+    containsPeople: true,
   },
   destinationGuangzhou: {
-    src: "/images/china-guangzhou.jpg",
-    alt: "Canton Tower and Pearl River skyline reflecting on calm water at blue hour, Guangzhou",
+    src: publicSrc("privateGathering"),
+    alt: "Black lesbian and queer women gathered for a private luxury travel experience",
     category: "destination" as const,
-    containsPeople: false,
+    containsPeople: true,
   },
   culturalFood: {
-    src: "/images/cultural-food.jpg",
-    alt: "Overhead spread of authentic Sichuan hot pot with fresh ingredients and dipping sauces",
+    src: publicSrc("diningTable"),
+    alt: "Black women travelers sharing a celebratory meal together at a luxury dining table",
     category: "cultural" as const,
-    containsPeople: false,
+    containsPeople: true,
+  },
+  founderPrimary: {
+    src: "/images/founders-duo.jpg",
+    alt: "SerenEScape Travel founders smiling together at a warm gathering",
+    category: "founder" as const,
+    containsPeople: true,
+  },
+  founderSecondary: {
+    src: publicSrc("diverseGroup"),
+    alt: "Diverse Black lesbian and queer women travelers celebrating together",
+    category: "founder" as const,
+    containsPeople: true,
   },
   founderPlaceholder: {
-    src: "/images/founder-placeholder.svg",
-    alt: "Founder photograph pending — development placeholder",
-    category: "placeholder" as const,
-    containsPeople: false,
+    src: "/images/founders-duo.jpg",
+    alt: "SerenEScape Travel founders",
+    category: "founder" as const,
+    containsPeople: true,
   },
   experienceLuxury: {
-    src: "/images/experience-luxury.jpg",
-    alt: "Elegant boutique hotel suite at dusk with floor-to-ceiling windows overlooking misty mountains",
+    src: publicSrc("luxuryTravelCard"),
+    alt: "Ultra-realistic luxury travel experience curated for Black LGBTQIA+ women",
     category: "destination" as const,
-    containsPeople: false,
+    containsPeople: true,
   },
   experienceCommunity: {
-    src: "/images/experience-community.svg",
-    alt: "Warm gathering space with travel maps and cultural artifacts",
+    src: publicSrc("largeTravelGroup"),
+    alt: "Large organized travel group of Black lesbian and queer women exploring together",
     category: "cultural" as const,
-    containsPeople: false,
+    containsPeople: true,
   },
   tripChinaOdyssey: {
-    src: "/images/trip-china-odyssey.jpg",
-    alt: "Traditional Chinese pavilion overlooking Zhangjiajie pillar mountains at sunrise",
+    src: publicSrc("internationalAdventure"),
+    alt: "Black lesbian and queer women on an adventurous international group journey",
     category: "trip" as const,
-    containsPeople: false,
+    containsPeople: true,
   },
   tripCartagena: {
-    src: "/images/trip-cartagena.jpg",
-    alt: "Colorful colonial street in Cartagena Old Town with bougainvillea and cobblestones",
+    src: publicSrc("catamaran"),
+    alt: "Black lesbian and queer women enjoying a private luxury catamaran experience",
     category: "trip" as const,
-    containsPeople: false,
+    containsPeople: true,
   },
   tripTulum: {
-    src: "/images/trip-tulum.jpg",
-    alt: "Turquoise Caribbean sea and white sand beach with Mayan ruins on the cliff at Tulum",
+    src: publicSrc("catamaranAlt"),
+    alt: "Black lesbian and queer women celebrating on a luxury Caribbean catamaran",
     category: "trip" as const,
-    containsPeople: false,
+    containsPeople: true,
   },
   tripCapeTown: {
-    src: "/images/trip-cape-town.jpg",
-    alt: "Cape Winelands vineyard rows at sunset with Table Mountain in the distance",
+    src: publicSrc("largeTravelGroup"),
+    alt: "Organized travel group of Black lesbian and queer women on a curated journey",
     category: "trip" as const,
-    containsPeople: false,
+    containsPeople: true,
+  },
+  pageHeroTrips: {
+    src: publicSrc("realisticGroup"),
+    alt: "Black lesbian and queer women on a curated SerenEScape group journey",
+    category: "cultural" as const,
+    containsPeople: true,
+  },
+  pageHeroTestimonials: {
+    src: publicSrc("groupCelebration"),
+    alt: "Black lesbian and queer women celebrating their travel experience together",
+    category: "cultural" as const,
+    containsPeople: true,
   },
 } as const satisfies Record<string, ImageEntry>;
 
-export function getImage(key: keyof typeof IMAGES): ImageEntry {
+export function shouldUnoptimizeImage(src: string): boolean {
+  return src.includes("Firefly_") || src.includes("%20Firefly") || src.endsWith(".svg");
+}
+
+/** Default trip card hero by slug when DB image is missing */
+export const TRIP_HERO_BY_SLUG: Record<string, keyof typeof IMAGES> = {
+  "2027-china-odyssey": "tripChinaOdyssey",
+  "cartagena-caribbean-coast": "tripCartagena",
+  "tulum-riviera-maya": "tripTulum",
+  "cape-town-winelands": "tripCapeTown",
+};
+
+export function getTripHeroImage(slug: string): ImageEntry {
+  const key = TRIP_HERO_BY_SLUG[slug] ?? "tripChinaOdyssey";
   return IMAGES[key];
 }

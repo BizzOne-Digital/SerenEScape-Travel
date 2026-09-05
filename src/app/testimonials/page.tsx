@@ -18,8 +18,8 @@ export default async function TestimonialsPage() {
     <>
       <PageHero
         variant="image"
-        imageSrc={IMAGES.hero.src}
-        imageAlt={IMAGES.hero.alt}
+        imageSrc={IMAGES.pageHeroTestimonials.src}
+        imageAlt={IMAGES.pageHeroTestimonials.alt}
         eyebrow="Community Voices"
         title="Stories From the Journey"
         description="Real experiences from travelers who chose belonging over compromise."

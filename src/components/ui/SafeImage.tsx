@@ -7,7 +7,10 @@ type SafeImageProps = Omit<ImageProps, "src"> & {
 
 export function SafeImage({ src, alt, ...props }: SafeImageProps) {
   const resolved = resolveImageSrc(src);
-  const unoptimized = isStoredUploadUrl(resolved) || resolved.endsWith(".svg");
+  const unoptimized =
+    isStoredUploadUrl(resolved) ||
+    resolved.endsWith(".svg") ||
+    resolved.includes("Firefly_");
 
   return (
     <Image

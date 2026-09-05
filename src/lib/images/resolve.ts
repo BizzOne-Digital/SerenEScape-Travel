@@ -1,5 +1,5 @@
 /** Placeholder when legacy disk `/uploads/...` URLs are encountered */
-export const LEGACY_UPLOAD_PLACEHOLDER = "/images/founder-placeholder.svg";
+export const LEGACY_UPLOAD_PLACEHOLDER = "/images/founders-duo.jpg";
 
 export function isLegacyDiskUploadUrl(src: string): boolean {
   return src.startsWith("/uploads/") && !src.startsWith("/api/uploads/");

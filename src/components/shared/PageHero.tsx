@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { cn } from "@/lib/utils";
+import { shouldUnoptimizeImage } from "@/config/images";
 
 export type PageHeroVariant = "light" | "dark" | "image";
 
@@ -70,6 +71,7 @@ export function PageHero({
             alt={imageAlt ?? ""}
             fill
             priority
+            unoptimized={shouldUnoptimizeImage(imageSrc)}
             className="object-cover object-center"
             sizes="100vw"
           />

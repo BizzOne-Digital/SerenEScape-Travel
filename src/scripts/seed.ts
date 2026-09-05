@@ -10,6 +10,7 @@ import {
   Testimonial,
 } from "@/lib/models";
 import { BRAND } from "@/config/brand";
+import { IMAGES } from "@/config/images";
 
 const PUBLISHED_FAQS = [
   {
@@ -164,8 +165,8 @@ async function seed() {
   }
 
   const chinaHeroImage = {
-    url: "/images/trip-china-odyssey.jpg",
-    alt: "Traditional Chinese pavilion overlooking Zhangjiajie pillar mountains at sunrise",
+    url: IMAGES.tripChinaOdyssey.src,
+    alt: IMAGES.tripChinaOdyssey.alt,
   };
   const chinaStartDate = new Date("2027-09-09T00:00:00.000Z");
   const chinaEndDate = new Date("2027-09-21T00:00:00.000Z");
@@ -263,8 +264,8 @@ async function seed() {
       slug: "cartagena-caribbean-coast",
       titlePattern: /cartagena/i,
       heroImage: {
-        url: "/images/trip-cartagena.jpg",
-        alt: "Colorful colonial street in Cartagena Old Town with bougainvillea and cobblestones",
+        url: IMAGES.tripCartagena.src,
+        alt: IMAGES.tripCartagena.alt,
       },
       create: {
         title: "Cartagena & Caribbean Coast",
@@ -281,8 +282,8 @@ async function seed() {
       slug: "tulum-riviera-maya",
       titlePattern: /tulum/i,
       heroImage: {
-        url: "/images/trip-tulum.jpg",
-        alt: "Turquoise Caribbean sea and white sand beach with Mayan ruins on the cliff at Tulum",
+        url: IMAGES.tripTulum.src,
+        alt: IMAGES.tripTulum.alt,
       },
       create: {
         title: "Tulum & Riviera Maya",
@@ -299,8 +300,8 @@ async function seed() {
       slug: "cape-town-winelands",
       titlePattern: /cape town|winelands/i,
       heroImage: {
-        url: "/images/trip-cape-town.jpg",
-        alt: "Cape Winelands vineyard rows at sunset with Table Mountain in the distance",
+        url: IMAGES.tripCapeTown.src,
+        alt: IMAGES.tripCapeTown.alt,
       },
       create: {
         title: "Cape Town & Winelands",
@@ -420,27 +421,47 @@ async function seed() {
   if (founderCount === 0) {
     await Founder.insertMany([
       {
-        name: undefined,
         title: "Founder",
         bio: "Biography pending — to be added through the admin portal.",
         welcomeNote: "A personal welcome note will appear here once founder content is provided.",
-        image: { url: "/images/founder-placeholder.svg", alt: "Founder photograph pending — development placeholder" },
+        image: { url: IMAGES.founderPrimary.src, alt: IMAGES.founderPrimary.alt },
         order: 1,
-        published: false,
-        isPlaceholder: true,
+        published: true,
+        isPlaceholder: false,
       },
       {
-        name: undefined,
         title: "Co-Founder",
         bio: "Biography pending — to be added through the admin portal.",
         welcomeNote: "A personal welcome note will appear here once founder content is provided.",
-        image: { url: "/images/founder-placeholder.svg", alt: "Founder photograph pending — development placeholder" },
+        image: { url: IMAGES.founderSecondary.src, alt: IMAGES.founderSecondary.alt },
         order: 2,
-        published: false,
-        isPlaceholder: true,
+        published: true,
+        isPlaceholder: false,
       },
     ]);
-    console.log("Created founder placeholders (no invented identities)");
+    console.log("Created founder profiles with client imagery");
+  } else {
+    await Founder.updateOne(
+      { order: 1 },
+      {
+        $set: {
+          image: { url: IMAGES.founderPrimary.src, alt: IMAGES.founderPrimary.alt },
+          published: true,
+          isPlaceholder: false,
+        },
+      }
+    );
+    await Founder.updateOne(
+      { order: 2 },
+      {
+        $set: {
+          image: { url: IMAGES.founderSecondary.src, alt: IMAGES.founderSecondary.alt },
+          published: true,
+          isPlaceholder: false,
+        },
+      }
+    );
+    console.log("Updated founder images from public folder");
   }
 
   const testimonialCount = await Testimonial.countDocuments();

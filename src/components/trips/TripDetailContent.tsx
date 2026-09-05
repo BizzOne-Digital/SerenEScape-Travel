@@ -22,7 +22,7 @@ import type { TripCardData } from "@/components/trips/TripCard";
 import type { TripDetailData } from "@/lib/trips/queries";
 import { formatCents, getEffectivePriceCents } from "@/lib/pricing";
 import { BRAND } from "@/config/brand";
-import { IMAGES } from "@/config/images";
+import { IMAGES, getTripHeroImage, shouldUnoptimizeImage } from "@/config/images";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/utils";
 
@@ -50,7 +50,8 @@ export function TripDetailContent({ trip, relatedTrips }: TripDetailContentProps
   const effectivePrice = getEffectivePriceCents(trip.priceFromCents, trip.salePriceCents);
   const spotsLeft = Math.max(0, trip.capacity - trip.reservedCount);
   const dateRange = formatDateRange(trip.startDate, trip.endDate);
-  const heroUrl = trip.heroImage?.url ?? IMAGES.tripChinaOdyssey.src;
+  const tripHeroFallback = getTripHeroImage(trip.slug);
+  const heroUrl = trip.heroImage?.url ?? tripHeroFallback.src;
   const canBook =
     trip.isBookable &&
     ["booking_open", "limited_spots"].includes(trip.status) &&
@@ -65,6 +66,7 @@ export function TripDetailContent({ trip, relatedTrips }: TripDetailContentProps
             alt={trip.heroImage?.alt ?? trip.title}
             fill
             priority
+            unoptimized={shouldUnoptimizeImage(heroUrl)}
             className="object-cover"
             sizes="100vw"
           />

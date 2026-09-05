@@ -14,7 +14,7 @@ import {
 import type { TripStatus } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { formatCents, getEffectivePriceCents } from "@/lib/pricing";
-import { IMAGES } from "@/config/images";
+import { getTripHeroImage, shouldUnoptimizeImage } from "@/config/images";
 import { cn } from "@/lib/utils";
 
 export type TripCardData = {
@@ -119,8 +119,9 @@ export function TripCard({ trip, priority = false, className }: TripCardProps) {
   const effectivePrice = getEffectivePriceCents(trip.priceFromCents, trip.salePriceCents);
   const currency = trip.currency ?? "USD";
   const dateRange = formatDateRange(trip.startDate, trip.endDate);
-  const imageUrl = trip.heroImage?.url ?? IMAGES.tripChinaOdyssey.src;
-  const imageAlt = trip.heroImage?.alt ?? IMAGES.tripChinaOdyssey.alt;
+  const fallback = getTripHeroImage(trip.slug);
+  const imageUrl = trip.heroImage?.url ?? fallback.src;
+  const imageAlt = trip.heroImage?.alt ?? fallback.alt;
 
   const isOnSale =
     trip.salePriceCents != null &&
@@ -136,6 +137,7 @@ export function TripCard({ trip, priority = false, className }: TripCardProps) {
             alt={imageAlt}
             fill
             priority={priority}
+            unoptimized={shouldUnoptimizeImage(imageUrl)}
             className="object-cover transition-transform duration-700 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />

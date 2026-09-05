@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/shared/PageHero";
 import { BookingFlow } from "@/components/booking/BookingFlow";
-import { IMAGES } from "@/config/images";
+import { getTripHeroImage } from "@/config/images";
 import { getTripBySlug } from "@/lib/trips/queries";
 import { getSiteSettings } from "@/lib/site/queries";
 
@@ -35,8 +35,8 @@ export default async function BookingTripPage({ params }: BookingTripPageProps) 
     <>
       <PageHero
         variant="image"
-        imageSrc={trip.heroImage?.url ?? IMAGES.hero.src}
-        imageAlt={trip.heroImage?.alt ?? trip.title}
+        imageSrc={trip.heroImage?.url ?? getTripHeroImage(trip.slug).src}
+        imageAlt={trip.heroImage?.alt ?? getTripHeroImage(trip.slug).alt}
         eyebrow="Booking"
         title={trip.title}
         description={trip.destination}
