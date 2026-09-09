@@ -92,8 +92,8 @@ export const IMAGES = {
     containsPeople: true,
   },
   tripChinaOdyssey: {
-    src: publicSrc("internationalAdventure"),
-    alt: "Black lesbian and queer women on an adventurous international group journey",
+    src: publicSrc("largeTravelGroup"),
+    alt: "Organized travel group of Black lesbian and queer women on a curated journey",
     category: "trip" as const,
     containsPeople: true,
   },
