@@ -63,13 +63,13 @@ export function Footer() {
         <div className="grid min-w-0 gap-12 lg:grid-cols-12 lg:gap-8">
           <div className="min-w-0 lg:col-span-4">
             <Link href="/" className="inline-block">
-              <div className="inline-block rounded-xl bg-soft-ivory px-3 py-2.5 shadow-sm">
+              <div className="inline-block rounded-xl bg-soft-ivory px-4 py-3 shadow-sm">
                 <Image
                   src={IMAGES.logo.src}
                   alt={IMAGES.logo.alt}
-                  width={180}
-                  height={56}
-                  className="h-11 w-auto"
+                  width={260}
+                  height={104}
+                  className="h-16 w-auto sm:h-20 md:h-24"
                 />
               </div>
             </Link>

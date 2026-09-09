@@ -65,10 +65,10 @@ export function Navigation() {
             <Image
               src={IMAGES.logo.src}
               alt={IMAGES.logo.alt}
-              width={180}
-              height={52}
+              width={220}
+              height={88}
               priority
-              className="h-9 w-auto sm:h-10 md:h-11"
+              className="h-14 w-auto sm:h-16 md:h-[4.5rem]"
             />
           </Link>
 

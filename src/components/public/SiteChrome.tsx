@@ -29,4 +29,4 @@ export function useSiteChrome() {
   return useContext(SiteChromeContext);
 }
 
-export const NAV_HEIGHT = 80;
+export const NAV_HEIGHT = 100;

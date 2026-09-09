@@ -65,10 +65,10 @@ export function PageLoader() {
               <Image
                 src={IMAGES.logo.src}
                 alt={IMAGES.logo.alt}
-                width={220}
-                height={72}
+                width={280}
+                height={112}
                 priority
-                className="h-auto w-44 sm:w-52"
+                className="h-auto w-52 sm:w-64"
               />
             </motion.div>
 
