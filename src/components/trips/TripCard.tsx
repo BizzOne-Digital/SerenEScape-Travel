@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, type MouseEvent } from "react";
+import { useRef, useState, type MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -73,11 +73,11 @@ function formatDateRange(
 function TripCardTilt({ children, className }: { children: React.ReactNode; className?: string }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [transform, setTransform] = useState("perspective(1000px) rotateX(0deg) rotateY(0deg)");
-  const [tiltEnabled, setTiltEnabled] = useState(false);
-
-  useEffect(() => {
-    setTiltEnabled(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
-  }, []);
+  const [tiltEnabled] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(hover: hover) and (pointer: fine)").matches
+  );
 
   function handleMouseMove(e: MouseEvent<HTMLDivElement>) {
     if (!tiltEnabled) return;

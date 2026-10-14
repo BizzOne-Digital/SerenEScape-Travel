@@ -1,24 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { IMAGES } from "@/config/images";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 const SESSION_KEY = "serenescape-session-loaded";
 
+function subscribeNoop() {
+  return () => {};
+}
+
 export function PageLoader() {
   const [visible, setVisible] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const reducedMotion = useReducedMotion();
+  const mounted = useSyncExternalStore(subscribeNoop, () => true, () => false);
 
   useEffect(() => {
-    setMounted(true);
-    setReducedMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-
-    if (!sessionStorage.getItem(SESSION_KEY)) {
-      setVisible(true);
-    }
+    if (sessionStorage.getItem(SESSION_KEY)) return;
+    const frame = requestAnimationFrame(() => setVisible(true));
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   useEffect(() => {

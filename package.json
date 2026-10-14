@@ -9,6 +9,7 @@
     "lint": "eslint",
     "seed": "tsx --env-file=.env.local src/scripts/seed.ts",
     "test": "vitest run",
+    "test:paypal": "tsx --env-file=.env.local src/scripts/test-paypal.ts",
     "test:e2e": "playwright test"
   },
   "dependencies": {

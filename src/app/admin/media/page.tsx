@@ -30,8 +30,10 @@ export default function AdminMediaPage() {
   const [loading, setLoading] = useState(true);
   const { showToast } = useAdminToast();
 
-  async function loadUploads(selectedFolder: UploadFolder) {
-    setLoading(true);
+  async function loadUploads(selectedFolder: UploadFolder, options?: { showLoading?: boolean }) {
+    if (options?.showLoading !== false) {
+      setLoading(true);
+    }
     try {
       const res = await fetch(`/api/upload?folder=${selectedFolder}&limit=48`);
       const data = await res.json();
@@ -46,9 +48,27 @@ export default function AdminMediaPage() {
   }
 
   useEffect(() => {
-    loadUploads(folder);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [folder]);
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const res = await fetch(`/api/upload?folder=${folder}&limit=48`);
+        const data = await res.json();
+        if (cancelled) return;
+        if (res.ok) {
+          setUploads(data.uploads ?? []);
+        }
+      } catch {
+        if (!cancelled) showToast("Failed to load uploads", "error");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [folder, showToast]);
 
   return (
     <>
@@ -64,7 +84,11 @@ export default function AdminMediaPage() {
             <label className="mb-1 block text-sm font-medium">Folder</label>
             <select
               value={folder}
-              onChange={(e) => setFolder(e.target.value as UploadFolder)}
+              onChange={(e) => {
+                const next = e.target.value as UploadFolder;
+                setLoading(true);
+                setFolder(next);
+              }}
               className="admin-input"
             >
               {FOLDERS.map((f) => (

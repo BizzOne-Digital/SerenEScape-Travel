@@ -22,7 +22,7 @@ import type { TripCardData } from "@/components/trips/TripCard";
 import type { TripDetailData } from "@/lib/trips/queries";
 import { formatCents, getEffectivePriceCents } from "@/lib/pricing";
 import { BRAND } from "@/config/brand";
-import { IMAGES, getTripHeroImage, shouldUnoptimizeImage } from "@/config/images";
+import { getTripHeroImage, shouldUnoptimizeImage } from "@/config/images";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/utils";
 

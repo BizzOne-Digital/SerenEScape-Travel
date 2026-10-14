@@ -3,8 +3,6 @@ import { connectDB } from "@/lib/db/connect";
 import { StoredUpload } from "@/lib/models/StoredUpload";
 import {
   ALLOWED_MIME_TYPES,
-  buildStoredUploadUrl,
-  isUploadFolder,
   parseStoredUploadUrl,
   sanitizeFilename,
   type UploadFolder,

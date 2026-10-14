@@ -5,7 +5,7 @@ import {
   sanitizeFilename,
   isUploadFolder,
 } from "@/lib/uploads/constants";
-import { generateUploadFilename, deleteStoredUploadByUrl } from "@/lib/uploads/storage";
+import { generateUploadFilename } from "@/lib/uploads/storage";
 import { resolveImageSrc, isLegacyDiskUploadUrl } from "@/lib/images/resolve";
 
 describe("upload storage helpers", () => {
