@@ -8,6 +8,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import type { PageContent } from "@/lib/content/defaults";
 import { cn } from "@/lib/utils";
 
 export type FAQData = {
@@ -20,9 +21,10 @@ export type FAQData = {
 
 interface FAQPreviewProps {
   faqs: FAQData[];
+  content: PageContent<"home">["faq"];
 }
 
-export function FAQPreview({ faqs }: FAQPreviewProps) {
+export function FAQPreview({ faqs, content }: FAQPreviewProps) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const reducedMotion = useReducedMotion();
@@ -36,12 +38,12 @@ export function FAQPreview({ faqs }: FAQPreviewProps) {
         <div className="grid gap-12 lg:grid-cols-5 lg:gap-16">
           <div className="lg:col-span-2">
             <SectionHeading
-              eyebrow="FAQ"
-              title="Questions? We've Got Answers."
-              description="The essentials before you book. For everything else, our full FAQ has you covered."
+              eyebrow={content.eyebrow}
+              title={content.title}
+              description={content.description}
             />
             <Button href="/faq" variant="outline" className="mt-8">
-              View All FAQs
+              {content.buttonLabel}
               <ArrowRight className="h-4 w-4" aria-hidden />
             </Button>
           </div>
@@ -53,7 +55,7 @@ export function FAQPreview({ faqs }: FAQPreviewProps) {
                 initial={reducedMotion ? false : { opacity: 0 }}
                 animate={inView ? { opacity: 1 } : {}}
               >
-                FAQs will appear here once published.
+                {content.emptyText}
               </motion.p>
             ) : (
               <div className="divide-y divide-muted-gold/20 rounded-2xl border border-muted-gold/20 bg-warm-sand/10">

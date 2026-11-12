@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState, type MouseEvent } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -14,7 +13,8 @@ import {
 import type { TripStatus } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { formatCents, getEffectivePriceCents } from "@/lib/pricing";
-import { getTripHeroImage, shouldUnoptimizeImage } from "@/config/images";
+import { getTripHeroImage } from "@/config/images";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { cn } from "@/lib/utils";
 
 export type TripCardData = {
@@ -120,8 +120,8 @@ export function TripCard({ trip, priority = false, className }: TripCardProps) {
   const currency = trip.currency ?? "USD";
   const dateRange = formatDateRange(trip.startDate, trip.endDate);
   const fallback = getTripHeroImage(trip.slug);
-  const imageUrl = trip.heroImage?.url ?? fallback.src;
-  const imageAlt = trip.heroImage?.alt ?? fallback.alt;
+  const imageUrl = trip.heroImage?.url || fallback.src;
+  const imageAlt = trip.heroImage?.url ? trip.heroImage.alt || trip.title : fallback.alt;
 
   const isOnSale =
     trip.salePriceCents != null &&
@@ -132,12 +132,11 @@ export function TripCard({ trip, priority = false, className }: TripCardProps) {
     <TripCardTilt className={cn("group h-full", className)}>
       <article className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-muted-gold/20 bg-soft-ivory shadow-lg shadow-luxury-ink/5 transition-shadow duration-300 group-hover:shadow-xl group-hover:shadow-rich-berry/10">
         <div className="relative aspect-[4/3] overflow-hidden">
-          <Image
+          <SafeImage
             src={imageUrl}
             alt={imageAlt}
             fill
             priority={priority}
-            unoptimized={shouldUnoptimizeImage(imageUrl)}
             className="object-cover transition-transform duration-700 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />

@@ -5,10 +5,10 @@ import { motion, useInView } from "motion/react";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
-import { BRAND } from "@/config/brand";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import type { PageContent } from "@/lib/content/defaults";
 
-export function FinalCTA() {
+export function FinalCTA({ content, tagline }: { content: PageContent<"home">["cta"]; tagline: string }) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const reducedMotion = useReducedMotion();
@@ -34,28 +34,28 @@ export function FinalCTA() {
           <Sparkles className="mx-auto mb-6 h-8 w-8 text-marigold" aria-hidden />
 
           <h2 className="mx-auto max-w-3xl font-display text-3xl font-medium leading-tight text-soft-ivory sm:text-4xl lg:text-5xl">
-            Your next journey should feel like freedom.
+            {content.title}
           </h2>
 
           <p className="mx-auto mt-6 max-w-xl font-sans text-base leading-relaxed text-soft-ivory/80 sm:text-lg">
-            Come for the destination. Stay for the community.{" "}
-            <span className="font-medium text-marigold">{BRAND.tagline}</span>
+            {content.text}{" "}
+            <span className="font-medium text-marigold">{tagline}</span>
           </p>
 
           <div className="prismatic-line mx-auto mt-8 w-24 opacity-90" aria-hidden />
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button href="/trips" variant="secondary" size="lg">
-              Explore Trips
+            <Button href={content.primaryHref} variant="secondary" size="lg">
+              {content.primaryLabel}
               <ArrowRight className="h-5 w-5" aria-hidden />
             </Button>
             <Button
-              href="/contact?type=custom-group"
+              href={content.secondaryHref}
               variant="outline"
               size="lg"
               className="border-soft-ivory/40 text-soft-ivory hover:bg-soft-ivory/10"
             >
-              Plan a Custom Group Experience
+              {content.secondaryLabel}
             </Button>
           </div>
         </motion.div>

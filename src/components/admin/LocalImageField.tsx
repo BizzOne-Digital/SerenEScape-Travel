@@ -15,6 +15,44 @@ interface LocalImageFieldProps {
   label?: string;
   className?: string;
   disabled?: boolean;
+  /**
+   * When true, replacing/removing does NOT delete the old file immediately.
+   * Use inside forms that have a Save button: the API route removes files that
+   * are no longer referenced once the save succeeds.
+   */
+  deferDelete?: boolean;
+}
+
+/** Vercel rejects request bodies above ~4.5MB, so big photos are shrunk in the browser first. */
+const SAFE_UPLOAD_BYTES = 4 * 1024 * 1024;
+const MAX_DIMENSION = 2400;
+
+async function prepareForUpload(file: File): Promise<File> {
+  if (file.size <= SAFE_UPLOAD_BYTES || file.type === "image/gif") return file;
+
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+
+    for (const quality of [0.88, 0.8, 0.7, 0.6]) {
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, "image/webp", quality)
+      );
+      if (blob && blob.size <= SAFE_UPLOAD_BYTES) {
+        return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".webp", { type: "image/webp" });
+      }
+    }
+  } catch {
+    // fall through and upload the original; the server will validate it
+  }
+  return file;
 }
 
 async function deleteIfStored(url: string) {
@@ -33,6 +71,7 @@ export function LocalImageField({
   label = "Image",
   className,
   disabled = false,
+  deferDelete = false,
 }: LocalImageFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -44,8 +83,9 @@ export function LocalImageField({
     setUploading(true);
 
     try {
+      const prepared = await prepareForUpload(file);
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", prepared);
       formData.append("folder", folder);
 
       const res = await fetch("/api/upload", {
@@ -53,12 +93,14 @@ export function LocalImageField({
         body: formData,
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(data.error ?? "Upload failed");
+        throw new Error(
+          res.status === 413 ? "Image is too large for the server. Try a smaller photo." : (data.error ?? "Upload failed")
+        );
       }
 
-      if (value && value !== data.url) {
+      if (!deferDelete && value && value !== data.url) {
         await deleteIfStored(value);
       }
 
@@ -76,7 +118,7 @@ export function LocalImageField({
     if (!value) return;
 
     try {
-      if (value.startsWith("/api/uploads/")) {
+      if (!deferDelete && value.startsWith("/api/uploads/")) {
         await deleteIfStored(value);
       }
       onChange("");

@@ -5,8 +5,9 @@ import { motion, useInView } from "motion/react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import type { PageContent } from "@/lib/content/defaults";
 
-export function BelongSection() {
+export function BelongSection({ content }: { content: PageContent<"home">["belong"] }) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const reducedMotion = useReducedMotion();
@@ -31,9 +32,9 @@ export function BelongSection() {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <SectionHeading
-              eyebrow="Our Story"
-              title="Belong Everywhere."
-              description="Founded by two Black LGBTQIA+ women who believe travel should be a celebration of who we are, not a compromise."
+              eyebrow={content.eyebrow}
+              title={content.title}
+              description={content.description}
             />
           </motion.div>
 
@@ -47,22 +48,15 @@ export function BelongSection() {
               <div className="prismatic-line absolute left-8 top-0 w-24 -translate-y-px sm:left-10" aria-hidden />
 
               <div className="space-y-6 font-sans text-base leading-relaxed text-luxury-ink/85 sm:text-lg">
-                <p>
-                  SerenEScape Travel creates spaces where Black women and LGBTQIA+ travelers can explore
-                  the world on our terms—with safety, luxury, and sisters who get it by our side.
-                </p>
-                <p>
-                  We curate transformative journeys that honor all your intersections. You get the freedom
-                  to explore independently while being held by a community where your full self is
-                  celebrated. No explanations needed. No shrinking. Just authentic adventure, queer joy,
-                  and genuine belonging.
-                </p>
+                {content.paragraphs.map((p, i) => (
+                  <p key={i}>{p.text}</p>
+                ))}
               </div>
 
               <div className="gold-line my-8" aria-hidden />
 
               <p className="font-display text-lg italic text-deep-aubergine/80">
-                Women allies who share our values are welcome too.
+                {content.note}
               </p>
             </div>
           </motion.div>

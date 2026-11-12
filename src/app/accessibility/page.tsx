@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
 import { LegalPageLayout } from "@/components/legal/LegalPageLayout";
+import { getSiteSettings } from "@/lib/site/queries";
 import { LEGAL_DRAFTS } from "@/config/legal-drafts";
 
 export const metadata: Metadata = {
   title: "Accessibility",
-  description: "SerenEScape Travel accessibility statement — our commitment to inclusive travel and web access.",
+  description: "Our accessibility statement and commitment to inclusive travel and web access.",
 };
 
-export default function AccessibilityPage() {
+export default async function AccessibilityPage() {
+  const settings = await getSiteSettings();
+
   return (
     <LegalPageLayout
       title="Accessibility Statement"
+      content={settings.accessibilityStatement}
       draftContent={LEGAL_DRAFTS.accessibility}
-      isDraft
+      isDraft={!settings.accessibilityStatement}
     />
   );
 }

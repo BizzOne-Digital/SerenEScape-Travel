@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import type { PageContent } from "@/lib/content/defaults";
 import { cn } from "@/lib/utils";
 
 export type TestimonialData = {
@@ -19,9 +20,10 @@ export type TestimonialData = {
 
 interface TestimonialsSectionProps {
   testimonials: TestimonialData[];
+  content: PageContent<"home">["testimonials"];
 }
 
-export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
+export function TestimonialsSection({ testimonials, content }: TestimonialsSectionProps) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const reducedMotion = useReducedMotion();
@@ -42,8 +44,8 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
     <section ref={ref} className="relative overflow-hidden bg-gradient-to-b from-soft-ivory to-warm-sand/40 py-20 sm:py-28">
       <Container>
         <SectionHeading
-          eyebrow="Testimonials"
-          title="Voices From the Journey"
+          eyebrow={content.eyebrow}
+          title={content.title}
           align="center"
           className="mb-12"
         />
@@ -57,10 +59,10 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
           >
             <Quote className="mx-auto mb-4 h-10 w-10 text-muted-gold/50" aria-hidden />
             <p className="font-display text-xl text-deep-aubergine/70">
-              Stories from our community coming soon
+              {content.emptyTitle}
             </p>
             <p className="mt-3 font-sans text-sm text-luxury-ink/50">
-              Real traveler stories will appear here once approved.
+              {content.emptyText}
             </p>
           </motion.div>
         ) : (

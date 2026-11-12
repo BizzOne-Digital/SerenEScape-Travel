@@ -134,7 +134,6 @@ const TripSchema = new Schema<ITrip>(
   { timestamps: true }
 );
 
-TripSchema.index({ slug: 1 });
 TripSchema.index({ status: 1, featured: 1 });
 TripSchema.index({ startDate: 1 });
 

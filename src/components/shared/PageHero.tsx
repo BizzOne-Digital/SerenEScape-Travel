@@ -1,9 +1,25 @@
-import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { cn } from "@/lib/utils";
-import { shouldUnoptimizeImage } from "@/config/images";
+import { SafeImage } from "@/components/ui/SafeImage";
 
 export type PageHeroVariant = "light" | "dark" | "image";
+
+/** Props for <PageHero /> from an admin-edited hero section. Uses the banner picture when one is set. */
+export function heroProps(
+  hero: { eyebrow?: string; title: string; description?: string; watermark?: string; image?: { url: string; alt: string } },
+  fallbackVariant: Exclude<PageHeroVariant, "image">
+) {
+  const hasImage = Boolean(hero.image?.url);
+  return {
+    variant: (hasImage ? "image" : fallbackVariant) as PageHeroVariant,
+    imageSrc: hasImage ? hero.image!.url : undefined,
+    imageAlt: hasImage ? hero.image!.alt : undefined,
+    eyebrow: hero.eyebrow,
+    title: hero.title,
+    description: hero.description,
+    watermark: hero.watermark,
+  };
+}
 
 interface PageHeroProps {
   eyebrow?: string;
@@ -66,12 +82,11 @@ export function PageHero({
     >
       {resolvedVariant === "image" && imageSrc && (
         <div className="absolute inset-0">
-          <Image
+          <SafeImage
             src={imageSrc}
             alt={imageAlt ?? ""}
             fill
             priority
-            unoptimized={shouldUnoptimizeImage(imageSrc)}
             className="object-cover object-center"
             sizes="100vw"
           />

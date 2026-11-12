@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 import { connectDB, isDBConfigured } from "@/lib/db/connect";
 import { Trip } from "@/lib/models";
 import { requireAdminApi, jsonError, jsonOk } from "@/lib/api/helpers";
+import { sanitizeTripPayload } from "@/lib/admin/trip-payload";
+import { logAdminAction } from "@/lib/admin/audit";
 
 const PUBLIC_STATUSES = [
   "coming_soon",
@@ -58,17 +60,17 @@ export async function POST(request: NextRequest) {
       return jsonError("Missing required fields: title, slug, destination, durationDays, priceFromCents");
     }
 
-    const existing = await Trip.findOne({ slug: body.slug.toLowerCase() });
+    const { set, unset, error: payloadError } = sanitizeTripPayload(body);
+    if (payloadError) return jsonError(payloadError);
+    for (const key of Object.keys(unset)) delete set[key];
+
+    const existing = await Trip.findOne({ slug: String(set.slug) });
     if (existing) {
       return jsonError("A trip with this slug already exists", 409);
     }
 
-    const trip = await Trip.create({
-      ...body,
-      slug: body.slug.toLowerCase(),
-      status: body.status ?? "draft",
-      createdBy: session!.user.id,
-    });
+    const trip = await Trip.create({ status: "draft", ...set });
+    await logAdminAction(session!.user.id, "trip.create", "Trip", String(trip._id));
 
     return jsonOk({ trip }, 201);
   } catch (err) {

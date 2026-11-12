@@ -1,54 +1,42 @@
-import { connectDB } from "@/lib/db/connect";
-import { FAQ } from "@/lib/models";
-import {
-  AdminPageHeader,
-  AdminCard,
-  AdminTable,
-  AdminBadge,
-} from "@/components/admin/AdminUI";
+"use client";
 
-export default async function AdminFAQsPage() {
-  let faqs: {
-    _id: string;
-    category: string;
-    question: string;
-    answer: string;
-    order: number;
-    published: boolean;
-    isDraft: boolean;
-  }[] = [];
+import { AdminPageHeader, AdminBadge } from "@/components/admin/AdminUI";
+import { CollectionManager } from "@/components/admin/CollectionManager";
 
-  try {
-    await connectDB();
-    faqs = (await FAQ.find().sort({ category: 1, order: 1 }).lean()) as unknown as typeof faqs;
-  } catch {
-    // DB not configured
-  }
-
+export default function AdminFAQsPage() {
   return (
     <>
-      <AdminPageHeader title="FAQs" description="Frequently asked questions" />
-
-      <AdminCard>
-        {faqs.length === 0 ? (
-          <p className="p-8 text-center text-sm text-luxury-ink/50">No FAQs yet</p>
-        ) : (
-          <AdminTable headers={["Category", "Question", "Order", "Status"]}>
-            {faqs.map((f) => (
-              <tr key={f._id} className="hover:bg-warm-sand/10">
-                <td className="px-4 py-3 capitalize">{f.category}</td>
-                <td className="px-4 py-3">{f.question}</td>
-                <td className="px-4 py-3">{f.order}</td>
-                <td className="px-4 py-3">
-                  <AdminBadge variant={f.isDraft ? "warning" : f.published ? "success" : "default"}>
-                    {f.isDraft ? "Draft" : f.published ? "Published" : "Hidden"}
-                  </AdminBadge>
-                </td>
-              </tr>
-            ))}
-          </AdminTable>
-        )}
-      </AdminCard>
+      <AdminPageHeader
+        title="FAQs"
+        description="Questions shown on the FAQ page and the homepage preview. Lower order number appears first."
+      />
+      <CollectionManager
+        name="faqs"
+        singular="FAQ"
+        emptyMessage="No FAQs yet"
+        defaults={{ category: "general", question: "", answer: "", order: 0, published: true, isDraft: false }}
+        fields={[
+          { key: "category", label: "Category", type: "text", required: true, help: "e.g. booking, payments, safety, general" },
+          { key: "question", label: "Question", type: "text", required: true },
+          { key: "answer", label: "Answer", type: "textarea", rows: 5, required: true },
+          { key: "order", label: "Order", type: "number" },
+          { key: "published", label: "Published (visible on the site)", type: "checkbox" },
+          { key: "isDraft", label: "Draft (hide until ready)", type: "checkbox" },
+        ]}
+        columns={[
+          { header: "Category", render: (f) => <span className="capitalize">{String(f.category)}</span> },
+          { header: "Question", render: (f) => String(f.question) },
+          { header: "Order", render: (f) => String(f.order ?? 0) },
+          {
+            header: "Status",
+            render: (f) => (
+              <AdminBadge variant={f.isDraft ? "warning" : f.published ? "success" : "default"}>
+                {f.isDraft ? "Draft" : f.published ? "Published" : "Hidden"}
+              </AdminBadge>
+            ),
+          },
+        ]}
+      />
     </>
   );
 }

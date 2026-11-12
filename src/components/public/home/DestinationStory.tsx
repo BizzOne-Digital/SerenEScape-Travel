@@ -1,49 +1,16 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import { motion, useInView } from "motion/react";
 import { Container } from "@/components/ui/Container";
-import { IMAGES, shouldUnoptimizeImage } from "@/config/images";
+import { SafeImage } from "@/components/ui/SafeImage";
+import type { PageContent } from "@/lib/content/defaults";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/utils";
 
-const destinations = [
-  {
-    key: "zhangjiajie",
-    image: IMAGES.destinationChina,
-    city: "Zhangjiajie",
-    region: "Hunan Province",
-    theme: "Nature & Wonder",
-    copy: "Sandstone pillars rise through morning mist like ancient sentinels. Hike forest trails, ride the Bailong Elevator, and stand where sky meets stone at Hallelujah Peak.",
-  },
-  {
-    key: "chengdu",
-    image: IMAGES.destinationChengdu,
-    city: "Chengdu",
-    region: "Sichuan Province",
-    theme: "Culture & Cuisine",
-    copy: "Giant pandas, Sichuan hot pot, and centuries-old tea houses. Wander Kuanzhai Alley's lantern-lit lanes and feel the unhurried rhythm of the city.",
-  },
-  {
-    key: "guangzhou",
-    image: IMAGES.destinationGuangzhou,
-    city: "Guangzhou",
-    region: "Guangdong Province",
-    theme: "Architecture & Heritage",
-    copy: "Colonial charm on Shamian Island, intricate Chen Clan ancestral halls, and the Pearl River glittering beneath Canton Tower. A city where tradition meets the future.",
-  },
-  {
-    key: "food",
-    image: IMAGES.culturalFood,
-    city: "Culinary Journey",
-    region: "Across China",
-    theme: "Food & Flavor",
-    copy: "From spice markets in Chongqing to dim sum in Guangzhou—every meal is a doorway into culture. Taste the regions that shape each day's adventure.",
-  },
-] as const;
+type Destination = PageContent<"home">["destinations"]["items"][number];
 
-export function DestinationStory() {
+export function DestinationStory({ content }: { content: PageContent<"home">["destinations"] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
 
@@ -52,22 +19,21 @@ export function DestinationStory() {
       <Container>
         <div className="mb-16 max-w-2xl">
           <p className="mb-3 font-sans text-xs font-semibold uppercase tracking-[0.28em] text-burnt-orange">
-            Destination Story
+            {content.eyebrow}
           </p>
           <h2 className="font-display text-3xl font-medium leading-tight text-deep-aubergine sm:text-4xl lg:text-5xl">
-            China, Layer by Layer
+            {content.title}
           </h2>
           <div className="prismatic-line mt-6 w-16" aria-hidden />
           <p className="mt-6 font-sans text-base leading-relaxed text-luxury-ink/75 sm:text-lg">
-            Scroll through the landscapes, flavors, and architecture that define our China odyssey—no
-            stock travelers, just the destinations themselves telling their stories.
+            {content.description}
           </p>
         </div>
 
         <div className="divide-y divide-warm-sand/80">
-          {destinations.map((dest, index) => (
+          {content.items.map((dest, index) => (
             <DestinationPanel
-              key={dest.key}
+              key={`${dest.city}-${index}`}
               dest={dest}
               index={index}
               reducedMotion={reducedMotion}
@@ -84,7 +50,7 @@ function DestinationPanel({
   index,
   reducedMotion,
 }: {
-  dest: (typeof destinations)[number];
+  dest: Destination;
   index: number;
   reducedMotion: boolean;
 }) {
@@ -106,11 +72,10 @@ function DestinationPanel({
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        <Image
-          src={dest.image.src}
+        <SafeImage
+          src={dest.image.url}
           alt={dest.image.alt}
           fill
-          unoptimized={shouldUnoptimizeImage(dest.image.src)}
           className="object-cover"
           sizes="(max-width: 1024px) 100vw, 50vw"
         />

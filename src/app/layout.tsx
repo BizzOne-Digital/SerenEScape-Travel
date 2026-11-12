@@ -3,6 +3,9 @@ import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { PublicLayout } from "@/components/public/PublicLayout";
 import { PageLoader } from "@/components/animations/PageLoader";
+import { getSiteSettings } from "@/lib/site/queries";
+import { getPageContent } from "@/lib/content/get";
+import { resolveImageSrc } from "@/lib/images/resolve";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -17,28 +20,36 @@ const manrope = Manrope({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "SerenEScape Travel | Belong Everywhere.",
-    template: "%s | SerenEScape Travel",
-  },
-  description:
-    "Luxury group travel for Black LGBTQIA+ women. Curated journeys with safety, community, and queer joy. Come for the destination. Stay for the community.",
-  keywords: [
-    "Black LGBTQIA+ group travel",
-    "Black women group trips",
-    "inclusive luxury travel",
-    "LGBTQIA+ women travel groups",
-    "BIPOC travel experiences",
-  ],
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    siteName: "SerenEScape Travel",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [settings, home] = await Promise.all([getSiteSettings(), getPageContent("home")]);
+  const title = settings.defaultSeo?.title || `${settings.businessName} | ${settings.tagline}`;
+  const description = settings.defaultSeo?.description || home.seo.description;
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return {
+    title: {
+      default: title,
+      template: `%s | ${settings.businessName}`,
+    },
+    description,
+    keywords: [
+      "Black LGBTQIA+ group travel",
+      "Black women group trips",
+      "inclusive luxury travel",
+      "LGBTQIA+ women travel groups",
+      "BIPOC travel experiences",
+    ],
+    icons: { icon: resolveImageSrc(settings.faviconUrl) },
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      siteName: settings.businessName,
+    },
+  };
+}
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const [settings, global] = await Promise.all([getSiteSettings(), getPageContent("global")]);
+
   return (
     <html lang="en" className={`${cormorant.variable} ${manrope.variable}`}>
       <body className="antialiased">
@@ -46,7 +57,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <PageLoader />
-        <PublicLayout>{children}</PublicLayout>
+        <PublicLayout
+          site={{
+            businessName: settings.businessName,
+            tagline: settings.tagline,
+            email: settings.email,
+            phone: settings.phone,
+            facebookUrl: settings.facebookUrl,
+            facebookLabel: settings.facebookLabel,
+            logoUrl: settings.logoUrl,
+          }}
+          footer={global.footer}
+          promoLabel={global.promoBanner.label}
+          promoLinkLabel={global.promoBanner.linkLabel}
+        >
+          {children}
+        </PublicLayout>
       </body>
     </html>
   );

@@ -1,39 +1,33 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
-import { PageHero } from "@/components/shared/PageHero";
-import { IMAGES } from "@/config/images";
+import { PageHero, heroProps } from "@/components/shared/PageHero";
 import { TestimonialsSection } from "@/components/public/home/TestimonialsSection";
 import { getApprovedTestimonials } from "@/lib/site/queries";
+import { getPageContent, getPageSeo } from "@/lib/content/get";
 
-export const metadata: Metadata = {
-  title: "Testimonials",
-  description:
-    "Real stories from Black LGBTQIA+ women who traveled with SerenEScape. Hear from our community.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageSeo("testimonials");
+}
 
 export default async function TestimonialsPage() {
-  const testimonials = await getApprovedTestimonials();
+  const [testimonials, content, home] = await Promise.all([
+    getApprovedTestimonials(),
+    getPageContent("testimonials"),
+    getPageContent("home"),
+  ]);
 
   return (
     <>
-      <PageHero
-        variant="image"
-        imageSrc={IMAGES.pageHeroTestimonials.src}
-        imageAlt={IMAGES.pageHeroTestimonials.alt}
-        eyebrow="Community Voices"
-        title="Stories From the Journey"
-        description="Real experiences from travelers who chose belonging over compromise."
-        watermark="Real Stories"
-      />
-      <TestimonialsSection testimonials={testimonials} />
+      <PageHero {...heroProps(content.hero, "dark")} />
+      <TestimonialsSection testimonials={testimonials} content={home.testimonials} />
       <section className="bg-soft-ivory pb-20">
         <Container>
           <p className="text-center font-sans text-sm text-luxury-ink/60">
-            Want to share your story?{" "}
+            {content.cta.text}{" "}
             <a href="/contact" className="text-rich-berry underline hover:text-deep-aubergine">
-              Get in touch
+              {content.cta.linkLabel}
             </a>{" "}
-            after your journey.
+            {content.cta.after}
           </p>
         </Container>
       </section>

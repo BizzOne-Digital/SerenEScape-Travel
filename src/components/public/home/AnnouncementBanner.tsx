@@ -20,6 +20,8 @@ export type Promotion = {
 
 interface AnnouncementBannerProps {
   promotions?: Promotion[];
+  label?: string;
+  linkLabel?: string;
 }
 
 function isPromotionActive(promo: Promotion, now: Date): boolean {
@@ -38,7 +40,11 @@ function formatPromotionMessage(promo: Promotion): string {
   return `Save $${(promo.discountValue / 100).toFixed(0)} with code ${promo.code}`;
 }
 
-export function AnnouncementBanner({ promotions: promotionsProp }: AnnouncementBannerProps) {
+export function AnnouncementBanner({
+  promotions: promotionsProp,
+  label = "Limited Offer",
+  linkLabel = "Explore trips",
+}: AnnouncementBannerProps) {
   const reducedMotion = useReducedMotion();
   const [fetchedPromotions, setFetchedPromotions] = useState<Promotion[]>([]);
   const [dismissed, setDismissed] = useState(false);
@@ -99,7 +105,7 @@ export function AnnouncementBanner({ promotions: promotionsProp }: AnnouncementB
               <Sparkles className="hidden h-4 w-4 shrink-0 text-marigold sm:block" aria-hidden />
               <p className="min-w-0 text-balance text-center font-sans text-xs font-medium leading-snug text-soft-ivory sm:text-sm">
                 <span className="mr-2 hidden font-semibold uppercase tracking-wider text-marigold sm:inline">
-                  Limited Offer
+                  {label}
                 </span>
                 {formatPromotionMessage(activePromotion)}
                 <Link
@@ -109,7 +115,7 @@ export function AnnouncementBanner({ promotions: promotionsProp }: AnnouncementB
                     "transition-colors hover:text-marigold"
                   )}
                 >
-                  Explore trips
+                  {linkLabel}
                 </Link>
               </p>
               <button

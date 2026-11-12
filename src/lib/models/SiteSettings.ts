@@ -26,6 +26,7 @@ export interface ISiteSettings extends Document {
   bookingTerms?: string;
   privacyPolicy?: string;
   cancellationPolicy?: string;
+  accessibilityStatement?: string;
   paymentPlanWording?: string;
   maintenanceMode: boolean;
   paypalEnabled: boolean;
@@ -64,6 +65,7 @@ const SiteSettingsSchema = new Schema<ISiteSettings>(
     bookingTerms: String,
     privacyPolicy: String,
     cancellationPolicy: String,
+    accessibilityStatement: String,
     paymentPlanWording: String,
     maintenanceMode: { type: Boolean, default: false },
     paypalEnabled: { type: Boolean, default: true },

@@ -97,7 +97,6 @@ const BookingSchema = new Schema<IBooking>(
   { timestamps: true }
 );
 
-BookingSchema.index({ bookingReference: 1 });
 BookingSchema.index({ "primaryTraveler.email": 1 });
 BookingSchema.index({ tripId: 1, bookingStatus: 1 });
 

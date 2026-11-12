@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Globe, Mail, Phone, Send } from "lucide-react";
-import { BRAND } from "@/config/brand";
-import { IMAGES } from "@/config/images";
+import { SafeImage } from "@/components/ui/SafeImage";
+import type { PageContent } from "@/lib/content/defaults";
+import type { SiteInfo } from "@/components/public/PublicLayout";
 import { Container } from "@/components/ui/Container";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +24,9 @@ const policyLinks = [
   { label: "Cancellation Policy", href: "/cancellation-policy" },
 ] as const;
 
-export function Footer() {
+export type FooterContent = PageContent<"global">["footer"];
+
+export function Footer({ site, content }: { site: SiteInfo; content: FooterContent }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -44,7 +46,7 @@ export function Footer() {
       if (!res.ok) throw new Error("Subscription failed");
 
       setStatus("success");
-      setMessage("Welcome to the journey — you're on the list.");
+      setMessage(content.newsletterSuccess);
       setEmail("");
     } catch {
       setStatus("error");
@@ -63,24 +65,23 @@ export function Footer() {
         <div className="grid min-w-0 gap-12 lg:grid-cols-12 lg:gap-8">
           <div className="min-w-0 lg:col-span-4">
             <Link href="/" className="inline-block">
-              <Image
-                src={IMAGES.logo.src}
-                alt={IMAGES.logo.alt}
+              <SafeImage
+                src={site.logoUrl}
+                alt={`${site.businessName} logo`}
                 width={260}
                 height={104}
                 className="h-16 w-auto sm:h-20 md:h-24"
               />
             </Link>
-            <p className="mt-4 font-display text-2xl text-muted-gold">{BRAND.tagline}</p>
+            <p className="mt-4 font-display text-2xl text-muted-gold">{site.tagline}</p>
             <p className="mt-3 max-w-sm font-sans text-sm leading-relaxed text-soft-ivory/70">
-              Luxury group travel curated for Black LGBTQIA+ women — where safety,
-              community, and queer joy meet the world.
+              {content.description}
             </p>
           </div>
 
           <div className="lg:col-span-2">
             <h3 className="mb-4 font-sans text-xs font-semibold uppercase tracking-[0.22em] text-muted-gold">
-              Quick Links
+              {content.quickLinksTitle}
             </h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
@@ -98,43 +99,45 @@ export function Footer() {
 
           <div className="lg:col-span-3">
             <h3 className="mb-4 font-sans text-xs font-semibold uppercase tracking-[0.22em] text-muted-gold">
-              Contact
+              {content.contactTitle}
             </h3>
             <ul className="space-y-3">
               <li>
                 <a
-                  href={`mailto:${BRAND.email}`}
+                  href={`mailto:${site.email}`}
                   className="inline-flex min-w-0 items-center gap-2 break-all font-sans text-sm text-soft-ivory/75 transition-colors hover:text-marigold sm:break-normal"
                 >
                   <Mail className="h-4 w-4 shrink-0 text-muted-gold" />
-                  {BRAND.email}
+                  {site.email}
                 </a>
               </li>
               <li>
                 <a
-                  href={`tel:${BRAND.phone.replace(/-/g, "")}`}
+                  href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}
                   className="inline-flex min-w-0 items-center gap-2 break-all font-sans text-sm text-soft-ivory/75 transition-colors hover:text-marigold sm:break-normal"
                 >
                   <Phone className="h-4 w-4 shrink-0 text-muted-gold" />
-                  {BRAND.phone}
+                  {site.phone}
                 </a>
               </li>
+              {site.facebookUrl && (
               <li>
                 <a
-                  href={BRAND.facebookUrl}
+                  href={site.facebookUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex min-w-0 items-center gap-2 break-all font-sans text-sm text-soft-ivory/75 transition-colors hover:text-marigold sm:break-normal"
                 >
                   <Globe className="h-4 w-4 shrink-0 text-muted-gold" />
-                  {BRAND.facebook}
+                  {site.facebookLabel}
                 </a>
               </li>
+              )}
             </ul>
 
             <div className="mt-6">
               <h4 className="mb-2 font-sans text-xs font-semibold uppercase tracking-[0.22em] text-muted-gold">
-                Policies
+                {content.policiesTitle}
               </h4>
               <ul className="space-y-2">
                 {policyLinks.map((link) => (
@@ -153,10 +156,10 @@ export function Footer() {
 
           <div className="lg:col-span-3">
             <h3 className="mb-4 font-sans text-xs font-semibold uppercase tracking-[0.22em] text-muted-gold">
-              Newsletter
+              {content.newsletterTitle}
             </h3>
             <p className="mb-4 font-sans text-sm text-soft-ivory/70">
-              Be first to know about new journeys, early access, and community events.
+              {content.newsletterText}
             </p>
             <form onSubmit={handleNewsletter} className="space-y-3">
               <label htmlFor="footer-email" className="sr-only">
@@ -204,12 +207,12 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
           <div className="space-y-1">
             <p className="font-sans text-xs text-soft-ivory/50">
-              &copy; {new Date().getFullYear()} SerenEScape Travel. All rights reserved.
+              &copy; {new Date().getFullYear()} {site.businessName}. All rights reserved.
             </p>
-            <p className="font-sans text-xs text-muted-gold/80">Built for belonging</p>
+            <p className="font-sans text-xs text-muted-gold/80">{content.builtFor}</p>
           </div>
           <p className="font-sans text-xs tracking-wide text-soft-ivory/50">
-            PayPal · Square
+            {content.paymentNote}
           </p>
         </div>
       </Container>

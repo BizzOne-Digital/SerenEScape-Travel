@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
-import { IMAGES } from "@/config/images";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { Button } from "@/components/ui/Button";
 import { NAV_HEIGHT, useSiteChrome } from "@/components/public/SiteChrome";
 import { cn } from "@/lib/utils";
@@ -21,7 +20,7 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ] as const;
 
-export function Navigation() {
+export function Navigation({ logoUrl, logoAlt }: { logoUrl: string; logoAlt: string }) {
   const pathname = usePathname();
   const { headerHeight } = useSiteChrome();
   const [scrolled, setScrolled] = useState(false);
@@ -62,9 +61,9 @@ export function Navigation() {
           aria-label="Main navigation"
         >
           <Link href="/" className="relative z-50 shrink-0">
-            <Image
-              src={IMAGES.logo.src}
-              alt={IMAGES.logo.alt}
+            <SafeImage
+              src={logoUrl}
+              alt={logoAlt}
               width={220}
               height={88}
               priority

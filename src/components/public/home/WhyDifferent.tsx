@@ -13,52 +13,19 @@ import {
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import type { PageContent } from "@/lib/content/defaults";
 import { cn } from "@/lib/utils";
 
-const pillars: {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  accent: string;
-}[] = [
-  {
-    icon: Heart,
-    title: "Created for Us",
-    description:
-      "Every journey is designed with Black LGBTQIA+ women at the center—not as an afterthought, but as the heart of the experience.",
-    accent: "from-rich-berry/20 to-burnt-orange/10",
-  },
-  {
-    icon: Globe2,
-    title: "Culturally Intentional",
-    description:
-      "We honor the cultures we visit with respect, depth, and curiosity—connecting you to authentic local experiences beyond the tourist trail.",
-    accent: "from-emerald/20 to-cobalt/10",
-  },
-  {
-    icon: Gem,
-    title: "Luxury Without Pretension",
-    description:
-      "Quality accommodations and curated experiences that feel elevated yet approachable—never stuffy, never performative.",
-    accent: "from-muted-gold/25 to-marigold/10",
-  },
-  {
-    icon: Users,
-    title: "Freedom With Community",
-    description:
-      "Explore on your own terms while knowing your sisters have your back. Solo freedom, collective warmth.",
-    accent: "from-cobalt/20 to-rich-berry/10",
-  },
-  {
-    icon: Compass,
-    title: "Thoughtfully Curated",
-    description:
-      "Every detail—from pacing to excursions to group dynamics—is intentionally designed for how we actually travel.",
-    accent: "from-burnt-orange/20 to-emerald/10",
-  },
+// Icons and hover colours are design slots that repeat; text comes from the admin.
+const SLOTS: { icon: LucideIcon; accent: string }[] = [
+  { icon: Heart, accent: "from-rich-berry/20 to-burnt-orange/10" },
+  { icon: Globe2, accent: "from-emerald/20 to-cobalt/10" },
+  { icon: Gem, accent: "from-muted-gold/25 to-marigold/10" },
+  { icon: Users, accent: "from-cobalt/20 to-rich-berry/10" },
+  { icon: Compass, accent: "from-burnt-orange/20 to-emerald/10" },
 ];
 
-export function WhyDifferent() {
+export function WhyDifferent({ content }: { content: PageContent<"home">["why"] }) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const reducedMotion = useReducedMotion();
@@ -67,17 +34,18 @@ export function WhyDifferent() {
     <section ref={ref} className="bg-gradient-to-b from-warm-sand/40 to-soft-ivory py-20 sm:py-28">
       <Container>
         <SectionHeading
-          eyebrow="Why SerenEScape"
-          title="Travel That Understands You"
-          description="We built something different because we needed something different."
+          eyebrow={content.eyebrow}
+          title={content.title}
+          description={content.description}
           align="center"
           className="mb-14"
         />
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {pillars.map((pillar, index) => {
-            const Icon = pillar.icon;
-            const isLast = index === pillars.length - 1;
+          {content.items.map((pillar, index) => {
+            const slot = SLOTS[index % SLOTS.length];
+            const Icon = slot.icon;
+            const isLast = index === content.items.length - 1;
 
             return (
               <motion.article
@@ -97,7 +65,7 @@ export function WhyDifferent() {
                 <div
                   className={cn(
                     "absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-500 group-hover:opacity-100",
-                    pillar.accent
+                    slot.accent
                   )}
                   aria-hidden
                 />

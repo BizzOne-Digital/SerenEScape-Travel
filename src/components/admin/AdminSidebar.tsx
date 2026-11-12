@@ -15,6 +15,7 @@ import {
   HelpCircle,
   UserCircle,
   Image,
+  PanelsTopLeft,
   Settings,
   ScrollText,
   LogOut,
@@ -28,6 +29,7 @@ import { BRAND } from "@/config/brand";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/content", label: "Site Content", icon: PanelsTopLeft },
   { href: "/admin/trips", label: "Trips", icon: Map },
   { href: "/admin/bookings", label: "Bookings", icon: CalendarCheck },
   { href: "/admin/payments", label: "Payments", icon: CreditCard },

@@ -1,54 +1,50 @@
-import { connectDB } from "@/lib/db/connect";
-import { Founder } from "@/lib/models";
-import {
-  AdminPageHeader,
-  AdminCard,
-  AdminTable,
-  AdminBadge,
-} from "@/components/admin/AdminUI";
+"use client";
 
-export default async function AdminFoundersPage() {
-  let founders: {
-    _id: string;
-    name?: string;
-    title?: string;
-    order: number;
-    published: boolean;
-    isPlaceholder: boolean;
-  }[] = [];
+import { AdminPageHeader, AdminBadge } from "@/components/admin/AdminUI";
+import { CollectionManager } from "@/components/admin/CollectionManager";
 
-  try {
-    await connectDB();
-    founders = (await Founder.find().sort({ order: 1 }).lean()) as unknown as typeof founders;
-  } catch {
-    // DB not configured
-  }
-
+export default function AdminFoundersPage() {
   return (
     <>
-      <AdminPageHeader title="Founders" description="Team profiles and welcome notes" />
-
-      <AdminCard>
-        {founders.length === 0 ? (
-          <p className="p-8 text-center text-sm text-luxury-ink/50">No founder profiles yet</p>
-        ) : (
-          <AdminTable headers={["Name", "Title", "Order", "Published", "Placeholder"]}>
-            {founders.map((f) => (
-              <tr key={f._id} className="hover:bg-warm-sand/10">
-                <td className="px-4 py-3">{f.name ?? "—"}</td>
-                <td className="px-4 py-3">{f.title ?? "—"}</td>
-                <td className="px-4 py-3">{f.order}</td>
-                <td className="px-4 py-3">
-                  <AdminBadge variant={f.published ? "success" : "default"}>
-                    {f.published ? "Yes" : "No"}
-                  </AdminBadge>
-                </td>
-                <td className="px-4 py-3">{f.isPlaceholder ? "Yes" : "—"}</td>
-              </tr>
-            ))}
-          </AdminTable>
-        )}
-      </AdminCard>
+      <AdminPageHeader
+        title="Founders"
+        description="Team profiles shown on the homepage and About page. Turn off 'Placeholder' and turn on 'Published' to show a profile."
+      />
+      <CollectionManager
+        name="founders"
+        singular="Founder"
+        emptyMessage="No founder profiles yet"
+        defaults={{
+          name: "",
+          title: "",
+          bio: "",
+          welcomeNote: "",
+          image: { url: "", alt: "" },
+          order: 0,
+          published: true,
+          isPlaceholder: false,
+        }}
+        fields={[
+          { key: "name", label: "Name", type: "text", required: true },
+          { key: "title", label: "Title / role", type: "text" },
+          { key: "image", label: "Photo", type: "image" },
+          { key: "bio", label: "Biography", type: "textarea", rows: 5 },
+          { key: "welcomeNote", label: "Welcome note (short quote)", type: "textarea", rows: 3 },
+          { key: "order", label: "Order", type: "number" },
+          { key: "published", label: "Published (visible on the site)", type: "checkbox" },
+          { key: "isPlaceholder", label: "Placeholder (shows the 'content pending' card instead)", type: "checkbox" },
+        ]}
+        columns={[
+          { header: "Name", render: (f) => String(f.name ?? "—") },
+          { header: "Title", render: (f) => String(f.title ?? "—") },
+          { header: "Order", render: (f) => String(f.order ?? 0) },
+          {
+            header: "Published",
+            render: (f) => <AdminBadge variant={f.published ? "success" : "default"}>{f.published ? "Yes" : "No"}</AdminBadge>,
+          },
+          { header: "Placeholder", render: (f) => (f.isPlaceholder ? "Yes" : "—") },
+        ]}
+      />
     </>
   );
 }

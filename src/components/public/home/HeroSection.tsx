@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import {
@@ -11,8 +10,8 @@ import {
   Leaf,
   Sparkles,
 } from "lucide-react";
-import { BRAND } from "@/config/brand";
-import { IMAGES } from "@/config/images";
+import { SafeImage } from "@/components/ui/SafeImage";
+import type { PageContent } from "@/lib/content/defaults";
 import { formatCents } from "@/lib/pricing";
 import { Container } from "@/components/ui/Container";
 import { cn } from "@/lib/utils";
@@ -27,35 +26,34 @@ export interface HeroFeaturedTrip {
   currency?: string;
 }
 
-const DEFAULT_FEATURED: HeroFeaturedTrip = {
-  slug: "2027-china-odyssey",
-  title: "2027 China Odyssey",
-  durationDays: 13,
-  groupMin: 8,
-  groupMax: 20,
-  priceFromCents: 213600,
-  currency: "USD",
-};
-
-const floatingPills = [
-  { label: "Asia", icon: Mountain, className: "top-[22%] left-[38%] md:left-[42%] lg:left-[44%]" },
-  { label: "Culture", icon: Landmark, className: "top-[34%] right-[8%] md:right-[12%]" },
-  { label: "Adventure", icon: Leaf, className: "bottom-[38%] right-[14%] md:right-[18%]" },
+// Positions/icons are fixed design slots; the admin edits the text of up to 3 of each.
+const PILL_SLOTS = [
+  { icon: Mountain, className: "top-[22%] left-[38%] md:left-[42%] lg:left-[44%]" },
+  { icon: Landmark, className: "top-[34%] right-[8%] md:right-[12%]" },
+  { icon: Leaf, className: "bottom-[38%] right-[14%] md:right-[18%]" },
 ] as const;
 
-const watermarks = [
-  { text: "Adventure Awaits", className: "top-[18%] left-[32%] md:left-[36%]" },
-  { text: "Explore Boldly", className: "top-[16%] right-[6%] md:right-[10%]" },
-  { text: "Journeys That Connect · Est. 2021", className: "bottom-[28%] left-[30%] md:left-[34%]" },
+const WATERMARK_SLOTS = [
+  "top-[18%] left-[32%] md:left-[36%]",
+  "top-[16%] right-[6%] md:right-[10%]",
+  "bottom-[28%] left-[30%] md:left-[34%]",
 ] as const;
 
 interface HeroSectionProps {
   featuredTrip?: HeroFeaturedTrip | null;
+  content: PageContent<"home">["hero"];
+  tagline: string;
 }
 
-export function HeroSection({ featuredTrip }: HeroSectionProps) {
+export function HeroSection({ featuredTrip, content, tagline }: HeroSectionProps) {
   const reducedMotion = useReducedMotion();
-  const trip = featuredTrip ?? DEFAULT_FEATURED;
+  const trip = featuredTrip ?? null;
+  const floatingPills = content.pills
+    .slice(0, PILL_SLOTS.length)
+    .map((p, i) => ({ label: p.text, icon: PILL_SLOTS[i].icon, className: PILL_SLOTS[i].className }));
+  const watermarks = content.watermarks
+    .slice(0, WATERMARK_SLOTS.length)
+    .map((w, i) => ({ text: w.text, className: WATERMARK_SLOTS[i] }));
 
   return (
     <section
@@ -64,9 +62,9 @@ export function HeroSection({ featuredTrip }: HeroSectionProps) {
     >
       {/* Background image — landscape only, no people */}
       <div className="absolute inset-0">
-        <Image
-          src={IMAGES.hero.src}
-          alt={IMAGES.hero.alt}
+        <SafeImage
+          src={content.image.url}
+          alt={content.image.alt}
           fill
           priority
           className="object-cover object-[65%_center] md:object-[70%_center]"
@@ -128,7 +126,7 @@ export function HeroSection({ featuredTrip }: HeroSectionProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            Luxury group travel for Black LGBTQIA+ women
+            {content.eyebrow}
           </motion.p>
 
           <motion.h1
@@ -137,9 +135,9 @@ export function HeroSection({ featuredTrip }: HeroSectionProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08, duration: 0.65 }}
           >
-            Come for the Destination.
+            {content.headlineLine1}
             <br />
-            <span className="text-rich-berry">Stay for the Community.</span>
+            <span className="text-rich-berry">{content.headlineLine2}</span>
           </motion.h1>
 
           <motion.p
@@ -148,8 +146,7 @@ export function HeroSection({ featuredTrip }: HeroSectionProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18, duration: 0.6 }}
           >
-            Curated journeys created for Black women and LGBTQIA+ travelers who want to
-            explore boldly, experience deeply, and belong everywhere.
+            {content.supporting}
           </motion.p>
 
           <motion.div
@@ -159,18 +156,18 @@ export function HeroSection({ featuredTrip }: HeroSectionProps) {
             transition={{ delay: 0.28, duration: 0.6 }}
           >
             <Link
-              href="/trips"
+              href={content.primaryCtaHref}
               className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-deep-aubergine via-rich-berry to-deep-aubergine px-5 py-3.5 font-sans text-[11px] font-bold uppercase tracking-[0.1em] text-soft-ivory shadow-lg shadow-deep-aubergine/25 transition hover:shadow-xl hover:brightness-110 sm:w-auto sm:px-7 sm:text-xs sm:tracking-[0.14em]"
             >
               <Compass className="h-4 w-4 text-marigold" />
-              Explore Upcoming Trips
+              {content.primaryCtaLabel}
             </Link>
             <Link
-              href="/about"
+              href={content.secondaryCtaHref}
               className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-muted-gold/70 bg-soft-ivory/60 px-5 py-3.5 font-sans text-[11px] font-bold uppercase tracking-[0.1em] text-deep-aubergine backdrop-blur-sm transition hover:border-muted-gold hover:bg-warm-sand/50 sm:w-auto sm:px-7 sm:text-xs sm:tracking-[0.14em]"
             >
               <Sun className="h-4 w-4 text-burnt-orange" />
-              Discover Our Story
+              {content.secondaryCtaLabel}
             </Link>
           </motion.div>
 
@@ -183,14 +180,15 @@ export function HeroSection({ featuredTrip }: HeroSectionProps) {
             <div className="flex min-w-0 flex-wrap items-center gap-2">
               <Sparkles className="h-5 w-5 shrink-0 text-marigold" />
               <p className="min-w-0 font-sans text-xs font-bold uppercase tracking-[0.14em] text-deep-aubergine sm:text-sm sm:tracking-[0.22em]">
-                {BRAND.tagline}
+                {tagline}
               </p>
             </div>
           </motion.div>
         </div>
       </Container>
 
-      {/* Featured trip card — bottom right */}
+      {/* Featured trip card — bottom right (only when a trip is marked Featured in the admin) */}
+      {trip && (
       <motion.div
         className="absolute bottom-6 left-4 right-4 z-30 sm:left-auto sm:right-8 sm:max-w-sm lg:right-12"
         initial={reducedMotion ? false : { opacity: 0, x: 24, y: 12 }}
@@ -206,7 +204,7 @@ export function HeroSection({ featuredTrip }: HeroSectionProps) {
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-marigold/90">
-              Featured Journey
+              {content.featuredLabel}
             </p>
             <p className="truncate font-display text-base font-medium leading-tight text-soft-ivory sm:text-lg md:text-xl">
               {trip.title}
@@ -220,6 +218,7 @@ export function HeroSection({ featuredTrip }: HeroSectionProps) {
           </div>
         </Link>
       </motion.div>
+      )}
 
       {/* Mobile floating pills */}
       <div className="absolute bottom-[11.5rem] left-4 right-4 z-20 flex flex-wrap justify-center gap-2 sm:hidden">

@@ -1,57 +1,54 @@
-import { connectDB } from "@/lib/db/connect";
-import { Testimonial } from "@/lib/models";
-import {
-  AdminPageHeader,
-  AdminCard,
-  AdminTable,
-  AdminBadge,
-} from "@/components/admin/AdminUI";
+"use client";
 
-export default async function AdminTestimonialsPage() {
-  let testimonials: {
-    _id: string;
-    name?: string;
-    location?: string;
-    tripTitle?: string;
-    content: string;
-    rating?: number;
-    approved: boolean;
-    featured: boolean;
-  }[] = [];
+import { AdminPageHeader, AdminBadge } from "@/components/admin/AdminUI";
+import { CollectionManager } from "@/components/admin/CollectionManager";
 
-  try {
-    await connectDB();
-    testimonials = (await Testimonial.find().sort({ createdAt: -1 }).lean()) as unknown as typeof testimonials;
-  } catch {
-    // DB not configured
-  }
-
+export default function AdminTestimonialsPage() {
   return (
     <>
-      <AdminPageHeader title="Testimonials" description="Guest reviews and stories" />
-
-      <AdminCard>
-        {testimonials.length === 0 ? (
-          <p className="p-8 text-center text-sm text-luxury-ink/50">No testimonials yet</p>
-        ) : (
-          <AdminTable headers={["Name", "Trip", "Rating", "Approved", "Featured", "Preview"]}>
-            {testimonials.map((t) => (
-              <tr key={t._id} className="hover:bg-warm-sand/10">
-                <td className="px-4 py-3">{t.name ?? "Anonymous"}</td>
-                <td className="px-4 py-3">{t.tripTitle ?? "—"}</td>
-                <td className="px-4 py-3">{t.rating ? `${t.rating}/5` : "—"}</td>
-                <td className="px-4 py-3">
-                  <AdminBadge variant={t.approved ? "success" : "warning"}>
-                    {t.approved ? "Yes" : "Pending"}
-                  </AdminBadge>
-                </td>
-                <td className="px-4 py-3">{t.featured ? "Yes" : "—"}</td>
-                <td className="max-w-xs truncate px-4 py-3 text-luxury-ink/60">{t.content}</td>
-              </tr>
-            ))}
-          </AdminTable>
-        )}
-      </AdminCard>
+      <AdminPageHeader
+        title="Testimonials"
+        description="Guest stories. Only approved testimonials appear on the site; featured ones are shown first."
+      />
+      <CollectionManager
+        name="testimonials"
+        singular="Testimonial"
+        emptyMessage="No testimonials yet"
+        defaults={{
+          name: "",
+          location: "",
+          tripTitle: "",
+          content: "",
+          rating: 5,
+          image: { url: "", alt: "" },
+          approved: true,
+          featured: false,
+        }}
+        fields={[
+          { key: "name", label: "Guest name", type: "text" },
+          { key: "location", label: "Location", type: "text" },
+          { key: "tripTitle", label: "Trip", type: "text" },
+          { key: "content", label: "Testimonial", type: "textarea", rows: 5, required: true },
+          { key: "rating", label: "Rating (1-5)", type: "number" },
+          { key: "image", label: "Photo (optional)", type: "image" },
+          { key: "approved", label: "Approved (visible on the site)", type: "checkbox" },
+          { key: "featured", label: "Featured (shown first)", type: "checkbox" },
+        ]}
+        columns={[
+          { header: "Name", render: (t) => String(t.name || "Anonymous") },
+          { header: "Trip", render: (t) => String(t.tripTitle || "—") },
+          { header: "Rating", render: (t) => (t.rating ? `${t.rating}/5` : "—") },
+          {
+            header: "Approved",
+            render: (t) => <AdminBadge variant={t.approved ? "success" : "warning"}>{t.approved ? "Yes" : "Pending"}</AdminBadge>,
+          },
+          { header: "Featured", render: (t) => (t.featured ? "Yes" : "—") },
+          {
+            header: "Preview",
+            render: (t) => <span className="line-clamp-2 max-w-xs text-luxury-ink/60">{String(t.content)}</span>,
+          },
+        ]}
+      />
     </>
   );
 }

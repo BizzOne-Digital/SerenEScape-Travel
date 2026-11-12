@@ -13,3 +13,4 @@ export { Founder } from "./Founder";
 export { SiteSettings } from "./SiteSettings";
 export { AuditLog } from "./AuditLog";
 export { StoredUpload } from "./StoredUpload";
+export { PageContent } from "./PageContent";

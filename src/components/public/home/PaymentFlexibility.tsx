@@ -11,38 +11,12 @@ import {
 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { BRAND } from "@/config/brand";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import type { PageContent } from "@/lib/content/defaults";
 
-const paymentFeatures = [
-  {
-    icon: Wallet,
-    title: "Reserve with a Deposit",
-    description: "Secure your spot with a required deposit—your journey begins the moment you commit.",
-  },
-  {
-    icon: CalendarClock,
-    title: "Scheduled Installments",
-    description: "Spread remaining payments across a clear schedule with due dates you can plan around.",
-  },
-  {
-    icon: Link2,
-    title: "Secure Booking Link",
-    description: "Pay your balance anytime through your personal, secure traveler portal.",
-  },
-  {
-    icon: Percent,
-    title: `${BRAND.payInFullDiscountPercent}% Pay-in-Full Discount`,
-    description: `Choose to pay in full at booking and receive an automatic ${BRAND.payInFullDiscountPercent}% discount on your trip total.`,
-  },
-  {
-    icon: ShieldCheck,
-    title: "PayPal & Square",
-    description: "Trusted payment providers—never store card details on our servers.",
-  },
-] as const;
+const ICONS = [Wallet, CalendarClock, Link2, Percent, ShieldCheck];
 
-export function PaymentFlexibility() {
+export function PaymentFlexibility({ content }: { content: PageContent<"home">["payment"] }) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const reducedMotion = useReducedMotion();
@@ -51,17 +25,17 @@ export function PaymentFlexibility() {
     <section ref={ref} className="bg-deep-aubergine py-20 text-soft-ivory sm:py-28">
       <Container>
         <SectionHeading
-          eyebrow="Payment Flexibility"
-          title="Invest in Your Journey, Your Way"
-          description="We believe extraordinary travel should be accessible—not locked behind a single payment deadline."
+          eyebrow={content.eyebrow}
+          title={content.title}
+          description={content.description}
           align="center"
           className="mb-14 [&_h2]:text-soft-ivory [&_p]:text-soft-ivory/70"
         />
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {paymentFeatures.map((feature, index) => {
-            const Icon = feature.icon;
-            const isLast = index === paymentFeatures.length - 1;
+          {content.items.map((feature, index) => {
+            const Icon = ICONS[index % ICONS.length];
+            const isLast = index === content.items.length - 1;
 
             return (
               <motion.div
@@ -95,8 +69,7 @@ export function PaymentFlexibility() {
           animate={inView ? { opacity: 1 } : {}}
           transition={{ delay: reducedMotion ? 0 : 0.5 }}
         >
-          Installment payments are made through secure links when due—not automatically charged unless
-          you have explicitly opted into a configured auto-pay program.
+          {content.disclaimer}
         </motion.p>
 
         <div className="mt-8 flex items-center justify-center gap-6 font-sans text-sm font-semibold tracking-wide text-soft-ivory/80">

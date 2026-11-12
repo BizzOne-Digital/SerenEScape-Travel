@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import { motion, useInView } from "motion/react";
 import {
   Building2,
@@ -15,48 +14,13 @@ import {
 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { IMAGES, shouldUnoptimizeImage } from "@/config/images";
+import { SafeImage } from "@/components/ui/SafeImage";
+import type { PageContent } from "@/lib/content/defaults";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-const highlights: { icon: LucideIcon; title: string; description: string }[] = [
-  {
-    icon: Building2,
-    title: "Quality Accommodations",
-    description: "Hand-selected hotels and stays that balance comfort, location, and character.",
-  },
-  {
-    icon: Landmark,
-    title: "Cultural Excursions",
-    description: "Immersive experiences that connect you to local history, art, and traditions.",
-  },
-  {
-    icon: UsersRound,
-    title: "Welcoming Group Environment",
-    description: "Travel with inspiring women who celebrate life together—your community from day one.",
-  },
-  {
-    icon: Clock,
-    title: "Thoughtfully Paced Itineraries",
-    description: "Enough structure to feel supported, enough breathing room to savor each moment.",
-  },
-  {
-    icon: MapPin,
-    title: "Independent Exploration",
-    description: "Optional free time built in so you can wander, rest, or discover on your own terms.",
-  },
-  {
-    icon: CreditCard,
-    title: "Payment Plan Options",
-    description: "Reserve your spot with a deposit and spread the rest across scheduled installments.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Dedicated Trip Communication",
-    description: "Clear updates, pre-trip guidance, and support from booking through your return home.",
-  },
-];
+const ICONS: LucideIcon[] = [Building2, Landmark, UsersRound, Clock, MapPin, CreditCard, MessageCircle];
 
-export function ExperienceSection() {
+export function ExperienceSection({ content }: { content: PageContent<"home">["experience"] }) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const reducedMotion = useReducedMotion();
@@ -76,9 +40,9 @@ export function ExperienceSection() {
         <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
           <div>
             <SectionHeading
-              eyebrow="The SerenEScape Experience"
-              title="Every Detail, Intentionally Designed"
-              description="From where you rest your head to how you pay, we handle the details so you can focus on belonging."
+              eyebrow={content.eyebrow}
+              title={content.title}
+              description={content.description}
               className="[&_h2]:text-soft-ivory [&_p]:text-soft-ivory/75 [&_.prismatic-line]:opacity-90"
             />
 
@@ -88,11 +52,10 @@ export function ExperienceSection() {
               animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             >
-              <Image
-                src={IMAGES.experienceCommunity.src}
-                alt={IMAGES.experienceCommunity.alt}
+              <SafeImage
+                src={content.imageMobile.url}
+                alt={content.imageMobile.alt}
                 fill
-                unoptimized={shouldUnoptimizeImage(IMAGES.experienceCommunity.src)}
                 className="object-cover"
                 sizes="100vw"
               />
@@ -105,11 +68,10 @@ export function ExperienceSection() {
               animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             >
-              <Image
-                src={IMAGES.experienceLuxury.src}
-                alt={IMAGES.experienceLuxury.alt}
+              <SafeImage
+                src={content.imageDesktop.url}
+                alt={content.imageDesktop.alt}
                 fill
-                unoptimized={shouldUnoptimizeImage(IMAGES.experienceLuxury.src)}
                 className="object-cover"
                 sizes="(max-width: 1024px) 0vw, 50vw"
               />
@@ -118,8 +80,8 @@ export function ExperienceSection() {
           </div>
 
           <ul className="space-y-4">
-            {highlights.map((item, index) => {
-              const Icon = item.icon;
+            {content.items.map((item, index) => {
+              const Icon = ICONS[index % ICONS.length];
               return (
                 <motion.li
                   key={item.title}

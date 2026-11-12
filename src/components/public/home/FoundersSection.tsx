@@ -1,12 +1,13 @@
 "use client";
 
 import { useRef } from "react";
-import Image from "next/image";
 import { motion, useInView } from "motion/react";
 import { ImageIcon } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { IMAGES, shouldUnoptimizeImage } from "@/config/images";
+import { SafeImage } from "@/components/ui/SafeImage";
+import { IMAGES } from "@/config/images";
+import type { PageContent } from "@/lib/content/defaults";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/utils";
 
@@ -23,9 +24,10 @@ export type FounderData = {
 
 interface FoundersSectionProps {
   founders: FounderData[];
+  content: PageContent<"home">["founders"];
 }
 
-export function FoundersSection({ founders }: FoundersSectionProps) {
+export function FoundersSection({ founders, content }: FoundersSectionProps) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const reducedMotion = useReducedMotion();
@@ -37,9 +39,9 @@ export function FoundersSection({ founders }: FoundersSectionProps) {
     <section ref={ref} className="bg-soft-ivory py-20 sm:py-28">
       <Container>
         <SectionHeading
-          eyebrow="Meet the Founders"
-          title="Built by Women Who Get It"
-          description="The visionaries behind SerenEScape Travel—creating spaces where we all belong."
+          eyebrow={content.eyebrow}
+          title={content.title}
+          description={content.description}
           align="center"
           className="mb-14"
         />
@@ -63,7 +65,7 @@ export function FoundersSection({ founders }: FoundersSectionProps) {
               }}
             >
               {founder.isPlaceholder ? (
-                <PlaceholderCard />
+                <PlaceholderCard note={content.emptyNote} />
               ) : (
                 <FounderCard founder={founder} />
               )}
@@ -75,15 +77,14 @@ export function FoundersSection({ founders }: FoundersSectionProps) {
   );
 }
 
-function PlaceholderCard() {
+function PlaceholderCard({ note }: { note: string }) {
   return (
     <div className="p-8 text-center">
       <div className="relative mx-auto mb-6 aspect-square w-48 overflow-hidden rounded-2xl border-2 border-dashed border-burnt-orange/40 bg-warm-sand/50">
-        <Image
+        <SafeImage
           src={IMAGES.founderPlaceholder.src}
           alt={IMAGES.founderPlaceholder.alt}
           fill
-          unoptimized={shouldUnoptimizeImage(IMAGES.founderPlaceholder.src)}
           className="object-cover opacity-60"
           sizes="192px"
         />
@@ -96,25 +97,23 @@ function PlaceholderCard() {
       </div>
 
       <p className="rounded-lg border border-burnt-orange/30 bg-burnt-orange/10 px-4 py-3 font-sans text-sm font-medium text-burnt-orange">
-        Founder content pending — photographs and biographies will appear here once supplied by the
-        client. No placeholder names or identities are used.
+        {note}
       </p>
     </div>
   );
 }
 
 function FounderCard({ founder }: { founder: FounderData }) {
-  const imageUrl = founder.image?.url ?? IMAGES.founderPlaceholder.src;
-  const imageAlt = founder.image?.alt ?? "Founder photograph";
+  const imageUrl = founder.image?.url || IMAGES.founderPlaceholder.src;
+  const imageAlt = founder.image?.alt || founder.name || "Founder photograph";
 
   return (
     <div className="flex flex-col">
       <div className="relative aspect-[4/5] overflow-hidden">
-        <Image
+        <SafeImage
           src={imageUrl}
           alt={imageAlt}
           fill
-          unoptimized={shouldUnoptimizeImage(imageUrl)}
           className="object-cover"
           sizes="(max-width: 640px) 100vw, 50vw"
         />

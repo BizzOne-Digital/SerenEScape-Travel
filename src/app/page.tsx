@@ -4,6 +4,9 @@ import type { TripCardData } from "@/components/trips/TripCard";
 import type { FounderData } from "@/components/public/home/FoundersSection";
 import type { TestimonialData } from "@/components/public/home/TestimonialsSection";
 import type { FAQData } from "@/components/public/home/FAQPreview";
+import type { Metadata } from "next";
+import { getPageContent, getPageSeo } from "@/lib/content/get";
+import { getSiteSettings } from "@/lib/site/queries";
 import { HeroSection, type HeroFeaturedTrip } from "@/components/public/home/HeroSection";
 import { BelongSection } from "@/components/public/home/BelongSection";
 import { FeaturedTrips } from "@/components/public/home/FeaturedTrips";
@@ -113,8 +116,17 @@ async function getHomePageData(): Promise<HomePageData> {
   }
 }
 
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("home");
+  return { title: { absolute: seo.title }, description: seo.description };
+}
+
 export default async function HomePage() {
-  const { trips, testimonials, founders, faqs } = await getHomePageData();
+  const [{ trips, testimonials, founders, faqs }, content, settings] = await Promise.all([
+    getHomePageData(),
+    getPageContent("home"),
+    getSiteSettings(),
+  ]);
 
   const heroTrip: HeroFeaturedTrip | null = trips[0]
     ? {
@@ -130,18 +142,23 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroSection featuredTrip={heroTrip} />
-      <BelongSection />
-      <FeaturedTrips trips={trips} />
-      <WhyDifferent />
-      <ExperienceSection />
-      <DestinationStory />
-      <HowItWorks />
-      <FoundersSection founders={founders} />
-      <TestimonialsSection testimonials={testimonials} />
-      <PaymentFlexibility />
-      <FAQPreview faqs={faqs} />
-      <FinalCTA />
+      <HeroSection featuredTrip={heroTrip} content={content.hero} tagline={settings.tagline} />
+      <BelongSection content={content.belong} />
+      <FeaturedTrips
+        trips={trips}
+        eyebrow={content.featured.eyebrow}
+        title={content.featured.title}
+        description={content.featured.description}
+      />
+      <WhyDifferent content={content.why} />
+      <ExperienceSection content={content.experience} />
+      <DestinationStory content={content.destinations} />
+      <HowItWorks content={content.how} />
+      <FoundersSection founders={founders} content={content.founders} />
+      <TestimonialsSection testimonials={testimonials} content={content.testimonials} />
+      <PaymentFlexibility content={content.payment} />
+      <FAQPreview faqs={faqs} content={content.faq} />
+      <FinalCTA content={content.cta} tagline={settings.tagline} />
     </>
   );
 }

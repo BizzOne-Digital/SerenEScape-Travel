@@ -1,5 +1,8 @@
+import { connection } from "next/server";
 import { connectDB, isDBConfigured } from "@/lib/db/connect";
 import { SiteSettings, Founder, FAQ, Testimonial } from "@/lib/models";
+import { BRAND } from "@/config/brand";
+import { IMAGES } from "@/config/images";
 import type { FounderData } from "@/components/public/home/FoundersSection";
 import type { FAQData } from "@/components/public/home/FAQPreview";
 import type { TestimonialData } from "@/components/public/home/TestimonialsSection";
@@ -9,6 +12,12 @@ export type SiteSettingsData = {
   tagline: string;
   email: string;
   phone: string;
+  facebookUrl: string;
+  facebookLabel: string;
+  logoUrl: string;
+  faviconUrl: string;
+  defaultSeo?: { title?: string; description?: string };
+  accessibilityStatement?: string;
   aboutContent?: string;
   privacyPolicy?: string;
   bookingTerms?: string;
@@ -21,13 +30,18 @@ export type SiteSettingsData = {
 const DEFAULT_SETTINGS: SiteSettingsData = {
   businessName: "SerenEScape Travel",
   tagline: "Belong Everywhere.",
-  email: "letsescape@serenescapetravel.com",
-  phone: "702-544-1028",
+  email: BRAND.email,
+  phone: BRAND.phone,
+  facebookUrl: BRAND.facebookUrl,
+  facebookLabel: BRAND.facebook,
+  logoUrl: IMAGES.logo.src,
+  faviconUrl: IMAGES.logo.src,
   paypalEnabled: true,
   squareEnabled: true,
 };
 
 export async function getSiteSettings(): Promise<SiteSettingsData> {
+  await connection(); // always read fresh admin edits (no build-time prerender)
   if (!isDBConfigured()) return DEFAULT_SETTINGS;
 
   try {
@@ -36,10 +50,16 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
     if (!settings) return DEFAULT_SETTINGS;
 
     return {
-      businessName: settings.businessName,
-      tagline: settings.tagline,
-      email: settings.email,
-      phone: settings.phone,
+      businessName: settings.businessName || DEFAULT_SETTINGS.businessName,
+      tagline: settings.tagline || DEFAULT_SETTINGS.tagline,
+      email: settings.email || DEFAULT_SETTINGS.email,
+      phone: settings.phone || DEFAULT_SETTINGS.phone,
+      facebookUrl: settings.facebookUrl || DEFAULT_SETTINGS.facebookUrl,
+      facebookLabel: DEFAULT_SETTINGS.facebookLabel,
+      logoUrl: settings.logoUrl || DEFAULT_SETTINGS.logoUrl,
+      faviconUrl: settings.faviconUrl || DEFAULT_SETTINGS.faviconUrl,
+      defaultSeo: settings.defaultSeo,
+      accessibilityStatement: settings.accessibilityStatement,
       aboutContent: settings.aboutContent,
       privacyPolicy: settings.privacyPolicy,
       bookingTerms: settings.bookingTerms,
@@ -54,6 +74,7 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
 }
 
 export async function getPublishedFounders(): Promise<FounderData[]> {
+  await connection();
   if (!isDBConfigured()) return [];
 
   try {
@@ -75,6 +96,7 @@ export async function getPublishedFounders(): Promise<FounderData[]> {
 }
 
 export async function getPublishedFAQs(): Promise<FAQData[]> {
+  await connection();
   if (!isDBConfigured()) return [];
 
   try {
@@ -96,6 +118,7 @@ export async function getPublishedFAQs(): Promise<FAQData[]> {
 }
 
 export async function getApprovedTestimonials(): Promise<TestimonialData[]> {
+  await connection();
   if (!isDBConfigured()) return [];
 
   try {

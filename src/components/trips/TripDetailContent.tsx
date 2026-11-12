@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion, useInView, AnimatePresence } from "motion/react";
 import {
@@ -22,7 +21,8 @@ import type { TripCardData } from "@/components/trips/TripCard";
 import type { TripDetailData } from "@/lib/trips/queries";
 import { formatCents, getEffectivePriceCents } from "@/lib/pricing";
 import { BRAND } from "@/config/brand";
-import { getTripHeroImage, shouldUnoptimizeImage } from "@/config/images";
+import { getTripHeroImage } from "@/config/images";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { cn } from "@/lib/utils";
 
@@ -51,7 +51,7 @@ export function TripDetailContent({ trip, relatedTrips }: TripDetailContentProps
   const spotsLeft = Math.max(0, trip.capacity - trip.reservedCount);
   const dateRange = formatDateRange(trip.startDate, trip.endDate);
   const tripHeroFallback = getTripHeroImage(trip.slug);
-  const heroUrl = trip.heroImage?.url ?? tripHeroFallback.src;
+  const heroUrl = trip.heroImage?.url || tripHeroFallback.src;
   const canBook =
     trip.isBookable &&
     ["booking_open", "limited_spots"].includes(trip.status) &&
@@ -61,12 +61,11 @@ export function TripDetailContent({ trip, relatedTrips }: TripDetailContentProps
     <>
       <section ref={heroRef} className="relative min-h-[68vh] overflow-hidden pt-20">
         <div className="absolute inset-0 overflow-hidden">
-          <Image
+          <SafeImage
             src={heroUrl}
-            alt={trip.heroImage?.alt ?? trip.title}
+            alt={trip.heroImage?.alt || trip.title}
             fill
             priority
-            unoptimized={shouldUnoptimizeImage(heroUrl)}
             className="object-cover"
             sizes="100vw"
           />
@@ -495,7 +494,7 @@ function GallerySection({
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sorted.map((img, i) => (
             <div key={i} className="relative aspect-[4/3] overflow-hidden rounded-2xl">
-              <Image
+              <SafeImage
                 src={img.url}
                 alt={img.alt || title}
                 fill

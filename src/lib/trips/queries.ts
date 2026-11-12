@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { connectDB, isDBConfigured } from "@/lib/db/connect";
 import { Trip } from "@/lib/models";
 import type { TripCardData } from "@/components/trips/TripCard";
@@ -135,6 +136,7 @@ function toTripDetailData(trip: Record<string, unknown>): TripDetailData {
 }
 
 export async function getPublishedTrips(): Promise<TripCardData[]> {
+  await connection();
   if (!isDBConfigured()) return [];
 
   try {
@@ -150,6 +152,7 @@ export async function getPublishedTrips(): Promise<TripCardData[]> {
 }
 
 export async function getBookableTrips(): Promise<TripCardData[]> {
+  await connection();
   if (!isDBConfigured()) return [];
 
   try {
@@ -168,6 +171,7 @@ export async function getBookableTrips(): Promise<TripCardData[]> {
 }
 
 export async function getTripBySlug(slug: string): Promise<TripDetailData | null> {
+  await connection();
   if (!isDBConfigured()) return null;
 
   try {
@@ -184,6 +188,7 @@ export async function getRelatedTrips(
   relatedIds: string[],
   excludeSlug: string
 ): Promise<TripCardData[]> {
+  await connection();
   if (!isDBConfigured() || relatedIds.length === 0) return [];
 
   try {
@@ -203,6 +208,7 @@ export async function getRelatedTrips(
 }
 
 export async function getAllTripSlugs(): Promise<string[]> {
+  await connection();
   if (!isDBConfigured()) return [];
 
   try {

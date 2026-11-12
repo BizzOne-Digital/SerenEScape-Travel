@@ -6,36 +6,11 @@ import { Search, Bookmark, CreditCard, Users, Plane } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import type { PageContent } from "@/lib/content/defaults";
 
-const steps = [
-  {
-    icon: Search,
-    title: "Find Your Escape",
-    description: "Browse upcoming journeys and discover the destination that calls to you.",
-  },
-  {
-    icon: Bookmark,
-    title: "Reserve Your Place",
-    description: "Secure your spot with a deposit and complete your traveler details.",
-  },
-  {
-    icon: CreditCard,
-    title: "Choose Your Payment Option",
-    description: "Pay in full for 5% off, or spread payments across a flexible installment plan.",
-  },
-  {
-    icon: Users,
-    title: "Meet Your Community",
-    description: "Connect with fellow travelers before departure through our trip communication.",
-  },
-  {
-    icon: Plane,
-    title: "Travel and Belong Everywhere",
-    description: "Embark on your journey—explore boldly, experience deeply, belong fully.",
-  },
-] as const;
+const ICONS = [Search, Bookmark, CreditCard, Users, Plane];
 
-export function HowItWorks() {
+export function HowItWorks({ content }: { content: PageContent<"home">["how"] }) {
   const ref = useRef<HTMLElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
@@ -52,9 +27,9 @@ export function HowItWorks() {
     <section ref={ref} className="bg-warm-sand/30 py-20 sm:py-28">
       <Container>
         <SectionHeading
-          eyebrow="How It Works"
-          title="Your Journey Starts Here"
-          description="From discovery to departure, we've made every step clear and supported."
+          eyebrow={content.eyebrow}
+          title={content.title}
+          description={content.description}
           align="center"
           className="mb-16"
         />
@@ -74,8 +49,8 @@ export function HowItWorks() {
           )}
 
           <ol className="space-y-10">
-            {steps.map((step, index) => {
-              const Icon = step.icon;
+            {content.steps.map((step, index) => {
+              const Icon = ICONS[index % ICONS.length];
               return (
                 <motion.li
                   key={step.title}

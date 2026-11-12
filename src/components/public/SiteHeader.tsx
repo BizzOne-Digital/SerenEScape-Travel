@@ -6,7 +6,14 @@ import { AnnouncementBanner } from "@/components/public/home/AnnouncementBanner"
 import { Navigation } from "@/components/public/Navigation";
 import { useSiteChrome, NAV_HEIGHT } from "@/components/public/SiteChrome";
 
-export function SiteHeader() {
+interface SiteHeaderProps {
+  logoUrl: string;
+  logoAlt: string;
+  promoLabel: string;
+  promoLinkLabel: string;
+}
+
+export function SiteHeader({ logoUrl, logoAlt, promoLabel, promoLinkLabel }: SiteHeaderProps) {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const headerRef = useRef<HTMLDivElement>(null);
@@ -33,8 +40,8 @@ export function SiteHeader() {
       ref={headerRef}
       className="fixed inset-x-0 top-0 z-50 flex w-full max-w-[100vw] flex-col overflow-x-clip"
     >
-      {isHome && <AnnouncementBanner />}
-      <Navigation />
+      {isHome && <AnnouncementBanner label={promoLabel} linkLabel={promoLinkLabel} />}
+      <Navigation logoUrl={logoUrl} logoAlt={logoAlt} />
     </div>
   );
 }
